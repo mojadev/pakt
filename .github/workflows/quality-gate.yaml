@@ -16,7 +16,4 @@ jobs:
         with:
           node-version: '16'
       - run: yarn install
-      - uses: codecov/codecov-action@v1
-        with:
-          path: coverage/lcov-report
-    
+      - run: yarn ci
