@@ -5,13 +5,14 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
       - run: yarn install
-      - run: yarn test
+      - run: yarn ci
       - run: yarn coverage
       - uses: actions/upload-artifact@v2
         with:
@@ -19,6 +20,8 @@ jobs:
           path: coverage/lcov-report
   coverage:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: test
     steps:
       - uses: actions/download-artifact@v2
         with:

@@ -5,7 +5,7 @@ import path from 'path';
 const DEBUG_E2E = Boolean(process.env.DEBUG_E2E);
 
 export const runServer = async (folder: string): Promise<ServerProcess> => {
-  const cwd = path.join('src', 'e2e', folder);
+  const cwd = path.join(__dirname, '..', folder);
   const port = await getPort();
   console.info(`(start) Starting at port ${port}`, folder, cwd);
   return await new Promise<ServerProcess>((resolve, reject) => {
