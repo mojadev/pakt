@@ -1,0 +1,25 @@
+openapi: 3.0.1
+info:
+  title: Echo Server 
+  description: This is a simple example of an echo server
+  version: 1.0.0
+paths:
+  /echo: 
+    get:
+      operationId: echoRequest
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                "$ref": "#/components/schemas/EchoResponse"  
+
+components:
+  schemas:
+    EchoResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          
