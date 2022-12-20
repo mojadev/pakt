@@ -10,7 +10,10 @@
     "test": "jest",
     "generate-model": "NODE_PATH=./src ts-node ./src/cli generate src/__test__/basic.yaml ./test/simple-koa/generated",
     "e2e:echo-server": "ts-node src/e2e/echo-server/server.ts",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "pre-commit": "eslint src/",
+    "commit-msg": "commitlint -E $1",
+    "prepare-commit-msg": "echo ''"
   },
   "private": false,
   "devDependencies": {
@@ -31,7 +34,7 @@
     "eslint": "^8.26.0",
     "find-free-port": "^2.0.0",
     "get-port": "^5.1.1",
-    "husky": "^8.0.2",
+    "husky": "^8.0.0",
     "jest": "^29.2.2",
     "koa": "^2.13.4",
     "koa-router": "^10.1.1",

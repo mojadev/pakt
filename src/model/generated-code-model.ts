@@ -1,30 +1,30 @@
-import { CodeModel, modelType } from "../generator/code-generator";
-import { codeModel } from "./code-model.decorator";
-import { MethodName, RouterPath, RoutingModel, TypeModel } from "./types";
+import { CodeModel } from '../generator/code-generator';
+import { codeModel } from './code-model.decorator';
+import { MethodName, RouterPath, RoutingModel, TypeModel } from './types';
 
-const aliasSource = Symbol("aliasSource");
+const aliasSource = Symbol('aliasSource');
 
 /**
  * Model representing the code that should be generated.
  */
-@codeModel("folder")
+@codeModel('folder')
 export class Folder {
   constructor(public readonly name: string, public readonly children: Array<TypeScriptModule | Folder>) {}
 }
 
-@codeModel("typeScriptModule")
+@codeModel('typeScriptModule')
 export class TypeScriptModule {
-  models: CodeModel<string>[] = [];
+  models: Array<CodeModel<string>> = [];
 
   constructor(public readonly filename: string) {}
 
-  addModel(model: CodeModel<string>) {
+  addModel(model: CodeModel<string>): this {
     this.models = [...this.models, model];
     return this;
   }
 }
 
-@codeModel("import")
+@codeModel('import')
 export class EcmaScriptImport {
   defaultImport?: string;
   namespaceImport?: string;
@@ -32,62 +32,62 @@ export class EcmaScriptImport {
 
   constructor(public readonly path: string, public readonly library: boolean = false) {}
 
-  setDefaultImport(name: string) {
+  setDefaultImport(name: string): this {
     this.defaultImport = name;
     return this;
   }
 
-  setNamespaceImport(name: string) {
+  setNamespaceImport(name: string): this {
     this.namespaceImport = name;
     return this;
   }
 
-  addNamedImports(name: string[]) {
-    this.namedImports = Array.from(new Set([...name, ...(this.namedImports || [])]).values());
+  addNamedImports(name: string[]): this {
+    this.namedImports = Array.from(new Set([...name, ...(this.namedImports ?? [])]).values());
     return this;
   }
 }
 
-@codeModel("alias")
+@codeModel('alias')
 export class TypeScriptTypeAlias {
-  [aliasSource]?: string = "";
+  [aliasSource]?: string = '';
 
   constructor(public readonly name: string, public readonly alias: string, public readonly exported: boolean = true) {}
 
-  withAliasSource(source: string) {
+  withAliasSource(source: string): this {
     this[aliasSource] = source;
     return this;
   }
 
-  getAliasSource() {
+  getAliasSource(): string | undefined {
     return this[aliasSource];
   }
 
-  isArray() {
-    return this.alias.endsWith("[]");
+  isArray(): boolean {
+    return this.alias.endsWith('[]');
   }
 
-  get baseType() {
-    return this.alias.split("[")[0];
+  get baseType(): string {
+    return this.alias.split('[')[0];
   }
 }
 
-@codeModel("composite")
+@codeModel('composite')
 export class TypeScriptTypeComposition {
   children: TypeScriptDataStructure[] = [];
 
   constructor(
     public readonly name: string,
-    public readonly conjunction: "union" | "intersection" | "selection" | "negation",
+    public readonly conjunction: 'union' | 'intersection' | 'selection' | 'negation',
     public readonly exported: boolean = true
   ) {}
 
-  addChild(child: TypeScriptDataStructure) {
+  addChild(child: TypeScriptDataStructure): this {
     this.children = [...this.children, child];
     return this;
   }
 
-  addChildIf(condition: { (): boolean }, child: TypeScriptDataStructure) {
+  addChildIf(condition: () => boolean, child: TypeScriptDataStructure): this {
     if (!condition()) {
       return this;
     }
@@ -96,33 +96,33 @@ export class TypeScriptTypeComposition {
   }
 }
 
-@codeModel("interface")
+@codeModel('interface')
 export class TypeScriptInterface {
   definition: TypeScriptInterfaceDefinition = {};
 
   constructor(public readonly name: string, public readonly exported = true) {}
 
-  addField(fieldName: FieldName, value: TypeScriptDataStructure, required = false) {
+  addField(fieldName: FieldName, value: TypeScriptDataStructure, required = false): this {
     this.definition[fieldName] = value;
     this.definition[fieldName].required = required;
     return this;
   }
 }
 
-@codeModel("objectType")
+@codeModel('objectType')
 export class TypeScriptObjectTypeLiteral {
   definition: TypeScriptInterfaceDefinition = {};
 
   constructor(public readonly name: string, public readonly exported = true) {}
 
-  addField(fieldName: FieldName, value: TypeScriptDataStructure, required = false) {
+  addField(fieldName: FieldName, value: TypeScriptDataStructure, required = false): this {
     this.definition[fieldName] = value;
     this.definition[fieldName].required = required;
     return this;
   }
 }
 
-@codeModel("generic")
+@codeModel('generic')
 export class TypeScriptGeneric {
   constructor(
     public readonly name: string,
@@ -135,7 +135,7 @@ export class TypeScriptGeneric {
 /**
  * Todo: Implement generics properly
  */
-@codeModel("generic")
+@codeModel('generic')
 export class TypeScriptGenericV2 {
   constructor(public readonly name: string, public baseType = TypeScriptTypeAlias, public readonly exported = true) {}
 }
@@ -153,7 +153,7 @@ export type TypeScriptInterfaceDefinition = Record<
 
 export type FieldName = string | number;
 
-@codeModel("router:raw")
+@codeModel('router:raw')
 export class RouterRawDefinition implements RoutingModel {
   routerPaths: RouterPath[];
   types: Record<string, TypeModel>;
@@ -164,28 +164,28 @@ export class RouterRawDefinition implements RoutingModel {
   }
 }
 
-@codeModel("router")
+@codeModel('router')
 export class RouterDefinition {
   operations: RouterOperation[] = [];
 
-  addOperation(operation: RouterOperation) {
+  addOperation(operation: RouterOperation): this {
     this.operations = [...this.operations, operation];
     return this;
   }
 }
 
-@codeModel("router:operation")
+@codeModel('router:operation')
 export class RouterOperation {
   implementations: RouterOperationImplementation[] = [];
 
   constructor(public readonly method: MethodName, public readonly path: string, public readonly name: string) {}
 
-  addImplementation(implementation: RouterOperationImplementation) {
+  addImplementation(implementation: RouterOperationImplementation): this {
     this.implementations = [...this.implementations, implementation];
     return this;
   }
 
-  allResponses() {
+  allResponses(): Array<Response & { mimeType: string }> {
     return this.implementations
       .flatMap((operation) => operation.responses.map((response) => ({ ...response, mimeType: operation.mimeType })))
       .filter(Boolean);
@@ -195,7 +195,7 @@ export class RouterOperation {
     const responseInterface = new TypeScriptInterface(mimeType);
     const response = this.implementations.find((impl) => impl.mimeType === mimeType);
     response?.responses.forEach((impl) => {
-      responseInterface.addField(impl.status, impl.payload || new TypeScriptTypeAlias("void", "void"), true);
+      responseInterface.addField(impl.status, impl.payload ?? new TypeScriptTypeAlias('void', 'void'), true);
     });
     return responseInterface;
   }
@@ -203,7 +203,7 @@ export class RouterOperation {
 
 export interface RouterOperationImplementation {
   mimeType: MimeType;
-  params: Omit<Parameter, "required">[];
+  params: Array<Omit<Parameter, 'required'>>;
   queryParams: Parameter[];
   responses: Response[];
 }
@@ -215,7 +215,7 @@ export interface Response {
 
 export interface Parameter {
   name: string;
-  format: "simple" | "matrix" | "label";
+  format: 'simple' | 'matrix' | 'label';
   explode: boolean;
   type: TypeScriptDataStructure;
   required?: boolean;
@@ -223,4 +223,4 @@ export interface Parameter {
 
 type MimeType = string;
 
-export const toPlainObject = (x: unknown) => JSON.parse(JSON.stringify(x));
+export const toPlainObject = (x: unknown): unknown => JSON.parse(JSON.stringify(x));

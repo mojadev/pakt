@@ -1,6 +1,5 @@
-import { ObjectDestructuringAssignment, ObjectTypeDeclaration } from "@ts-morph/common/lib/typescript";
-import { iterateObject } from "../../../iterate-object";
-import { isType } from "../../../model/code-model.decorator";
+import { iterateObject } from '../../../iterate-object';
+import { isType } from '../../../model/code-model.decorator';
 import {
   EcmaScriptImport,
   TypeScriptDataStructure,
@@ -9,7 +8,7 @@ import {
   TypeScriptObjectTypeLiteral,
   TypeScriptTypeAlias,
   TypeScriptTypeComposition,
-} from "../../../model/generated-code-model";
+} from '../../../model/generated-code-model';
 
 /**
  * Identify all imports of the given data structure.
@@ -18,13 +17,13 @@ import {
  */
 export const identifyImports = (dataStructure: TypeScriptDataStructure, isRoot = true): EcmaScriptImport[] => {
   let imports: EcmaScriptImport[] = [];
-  if (isType<TypeScriptTypeAlias>("alias", dataStructure)) {
+  if (isType<TypeScriptTypeAlias>('alias', dataStructure)) {
     imports = [createImport(dataStructure, isRoot)].filter(Boolean) as EcmaScriptImport[];
   }
 
   if (
-    isType<TypeScriptObjectTypeLiteral>("objectType", dataStructure) ||
-    isType<TypeScriptInterface>("interface", dataStructure)
+    isType<TypeScriptObjectTypeLiteral>('objectType', dataStructure) ||
+    isType<TypeScriptInterface>('interface', dataStructure)
   ) {
     imports = [
       ...imports,
@@ -32,21 +31,21 @@ export const identifyImports = (dataStructure: TypeScriptDataStructure, isRoot =
     ];
   }
 
-  if (isType<TypeScriptTypeComposition>("composite", dataStructure)) {
+  if (isType<TypeScriptTypeComposition>('composite', dataStructure)) {
     imports = [...imports, ...dataStructure.children.flatMap((value) => identifyImports(value, true))];
   }
-  if (isType<TypeScriptGeneric>("generic", dataStructure)) {
+  if (isType<TypeScriptGeneric>('generic', dataStructure)) {
     imports = [...imports, ...identifyImports(dataStructure.templateType)];
   }
 
-  const reduced = imports.reduce((result, current) => {
+  const reduced = imports.reduce<Record<string, EcmaScriptImport>>((result, current) => {
     if (!result[current.path]) {
       result[current.path] = result[current.path] || current;
       return result;
     }
     result[current.path].addNamedImports(current.namedImports ?? []);
     return result;
-  }, {} as Record<string, EcmaScriptImport>);
+  }, {});
 
   return Object.values(reduced);
 };
@@ -68,13 +67,13 @@ export const simplifyImports = (imports: EcmaScriptImport[]): EcmaScriptImport[]
     simplified[importDeclaration.path] =
       simplified[importDeclaration.path] || new EcmaScriptImport(importDeclaration.path);
     const targetImport = simplified[importDeclaration.path];
-    targetImport.addNamedImports(importDeclaration.namedImports || []);
+    targetImport.addNamedImports(importDeclaration.namedImports ?? []);
     targetImport.defaultImport = importDeclaration.defaultImport;
   });
   return Object.values(simplified);
 };
 
-const createImport = (alias: TypeScriptTypeAlias, isRoot = false) => {
+const createImport = (alias: TypeScriptTypeAlias, isRoot = false): EcmaScriptImport | undefined => {
   const source = alias.getAliasSource();
   if (!source) {
     return;

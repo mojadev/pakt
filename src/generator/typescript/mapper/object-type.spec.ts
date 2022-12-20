@@ -1,53 +1,53 @@
-import { toPlainObject, TypeScriptInterface } from "../../../model/generated-code-model";
-import { objectTypeParser } from "./object-type";
+import { toPlainObject } from '../../../model/generated-code-model';
+import { objectTypeParser } from './object-type';
 
-describe("Object type code definition", () => {
-  it("should create interface definitions for objects", () => {
-    const result = objectTypeParser("test", {
-      type: "object",
+describe('Object type code definition', () => {
+  it('should create interface definitions for objects', () => {
+    const result = objectTypeParser('test', {
+      type: 'object',
       properties: {
         requiredField: {
-          type: "string",
+          type: 'string',
           required: true,
         },
         additionalField: {
-          type: "number",
+          type: 'number',
         },
       },
     });
 
     expect(toPlainObject(result)).toEqual({
       exported: true,
-      name: "test",
+      name: 'test',
       definition: {
         requiredField: {
-          alias: "string",
+          alias: 'string',
           exported: true,
-          name: "requiredField",
+          name: 'requiredField',
           required: true,
         },
         additionalField: {
-          alias: "number",
+          alias: 'number',
           exported: true,
-          name: "additionalField",
+          name: 'additionalField',
           required: false,
         },
       },
     });
   });
 
-  it("should define required fields in the definition", () => {
+  it('should define required fields in the definition', () => {
     const result = toPlainObject(
-      objectTypeParser("test", {
-        type: "object",
-        requiredFields: ["requiredField"],
+      objectTypeParser('test', {
+        type: 'object',
+        requiredFields: ['requiredField'],
         properties: {
           requiredField: {
-            type: "string",
+            type: 'string',
             required: true,
           },
           additionalField: {
-            type: "number",
+            type: 'number',
           },
         },
       })

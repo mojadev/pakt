@@ -1,12 +1,12 @@
-import { exec } from "child_process";
-import path from "path";
+import { exec } from 'child_process';
+import path from 'path';
 
-export const setupProject = async (folder: string) => {
-  const cwd = path.join("src", "e2e", folder);
-  console.info(`(install) Installing in folder`, folder, cwd);
-  const result = new Promise((resolve, reject) => {
-    exec("yarn", { cwd }, (error, stdout, stderr) => {
-      if (error) {
+export const setupProject = async (folder: string): Promise<string> => {
+  const cwd = path.join('src', 'e2e', folder);
+  console.info('(install) Installing in folder', folder, cwd);
+  const result = new Promise<string>((resolve, reject) => {
+    exec('yarn', { cwd }, (error, stdout, stderr) => {
+      if (error != null) {
         console.error(stderr);
         reject(error);
       }
@@ -14,5 +14,5 @@ export const setupProject = async (folder: string) => {
       resolve(stdout);
     });
   });
-  return result;
+  return await result;
 };

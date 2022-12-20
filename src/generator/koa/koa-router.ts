@@ -1,8 +1,8 @@
-import { pascalCase } from "change-case";
-import { CodeGenerator, Registry } from "../code-generator";
-import { codeGenerator } from "../code-generator.decorator";
-import { identifyImports } from "../typescript/mapper/identify-imports";
-import { Writer } from "../writer";
+import { pascalCase } from 'change-case';
+import { CodeGenerator, Registry } from '../code-generator';
+import { codeGenerator } from '../code-generator.decorator';
+import { identifyImports } from '../typescript/mapper/identify-imports';
+import { Writer } from '../writer';
 import {
   EcmaScriptImport,
   RouterDefinition,
@@ -13,20 +13,24 @@ import {
   TypeScriptInterface,
   TypeScriptObjectTypeLiteral,
   TypeScriptTypeComposition,
-} from "../../model/generated-code-model";
+} from '../../model/generated-code-model';
 /**
  * Koa router implementation.
  *
  * @TODO: This is a mess, especially the implementations.
  * For a first implementation it's ok, but the implementation should be more concise and testable.
  */
-@codeGenerator("router")
+@codeGenerator('router')
 export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
-  constructor(private registry: Registry) {}
+  constructor(private readonly registry: Registry) {}
 
   generate(model: RouterDefinition, writer: Writer): Writer {
-    this.registry.generateCode(new EcmaScriptImport("api-types").setNamespaceImport("_ApiTypes"), writer);
-    this.registry.generateCode(new EcmaScriptImport("koa-router", true).setDefaultImport("Router"), writer);
+    // we use bracket notation for operations and I don't think it's worth
+    // checking whether operations are valid typescript property names without
+    // escaping.
+    writer.writeLine('/* eslint-disable @typescript-eslint/dot-notation */');
+    this.registry.generateCode(new EcmaScriptImport('api-types').setNamespaceImport('_ApiTypes'), writer);
+    this.registry.generateCode(new EcmaScriptImport('koa-router', true).setDefaultImport('Router'), writer);
     this.registry.generateCode(this.createSchemaImport(model), writer);
     writer.blankLine();
 
@@ -40,8 +44,8 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
     return writer;
   }
 
-  private generateReturnTypeInterface(model: RouterDefinition) {
-    const returnTypeInterface = new TypeScriptObjectTypeLiteral("ApiDefinition");
+  private generateReturnTypeInterface(model: RouterDefinition): TypeScriptObjectTypeLiteral {
+    const returnTypeInterface = new TypeScriptInterface('ApiDefinition');
     if (!model.operations) {
       return returnTypeInterface;
     }
@@ -52,14 +56,14 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
       operation.implementations.forEach((implementation) => {
         subType.addField(
           implementation.mimeType,
-          new TypeScriptTypeComposition("apiOperation", "intersection")
+          new TypeScriptTypeComposition('apiOperation', 'intersection')
             .addChild(
               new TypeScriptGeneric(
-                "string",
-                "_ApiTypes.ApiOperation",
+                'string',
+                '_ApiTypes.ApiOperation',
                 new TypeScriptGeneric(
-                  "response",
-                  "_ApiTypes.Response",
+                  'response',
+                  '_ApiTypes.Response',
                   operation.responseInterface(implementation.mimeType)
                 )
               )
@@ -74,31 +78,31 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
   }
 
   private generateParamsInterface(implementation: RouterOperationImplementation): TypeScriptDataStructure {
-    const interfaceDefinition = new TypeScriptInterface("params", true);
+    const interfaceDefinition = new TypeScriptInterface('params', true);
     implementation.params.forEach((param) => {
       interfaceDefinition.addField(param.name, param.type, true);
     });
 
-    return new TypeScriptGeneric("string", "_ApiTypes.PathParams", interfaceDefinition);
+    return new TypeScriptGeneric('string', '_ApiTypes.PathParams', interfaceDefinition);
   }
 
   private generateQueryParamsInterface(implementation: RouterOperationImplementation): TypeScriptDataStructure {
-    const interfaceDefinition = new TypeScriptInterface("query", true);
+    const interfaceDefinition = new TypeScriptInterface('query', true);
     implementation.queryParams.forEach((param) => {
       interfaceDefinition.addField(param.name, param.type, param.required);
     });
 
-    return new TypeScriptGeneric("string", "_ApiTypes.QueryParams", interfaceDefinition);
+    return new TypeScriptGeneric('string', '_ApiTypes.QueryParams', interfaceDefinition);
   }
 
-  private createSchemaImport(model: RouterDefinition) {
-    const ecmaImport = new EcmaScriptImport("components/parse-schemas");
+  private createSchemaImport(model: RouterDefinition): EcmaScriptImport {
+    const ecmaImport = new EcmaScriptImport('components/parse-schemas');
 
-    function getImportSymbols(filter: {
-      ({ implementation }: { implementation: RouterOperationImplementation }): boolean;
-    }): string[] {
+    function getImportSymbols(
+      filter: ({ implementation }: { implementation: RouterOperationImplementation }) => boolean
+    ): string[] {
       return Object.keys(
-        (model.operations || [])
+        (model.operations ?? [])
           .flatMap((operation) => operation.implementations.map((implementation) => ({ implementation, operation })))
           .filter(filter)
           .reduce((prev, { operation }) => ({ ...prev, [operation.name]: true }), {})
@@ -117,67 +121,67 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
     return ecmaImport;
   }
 
-  private generateRegistryImplementation(model: RouterDefinition, writer: Writer) {
+  private generateRegistryImplementation(model: RouterDefinition, writer: Writer): void {
     if (!model.operations) {
       return;
     }
-    writer
-      .writeLine("const createRegistry = <O extends keyof ApiDefinition, M extends keyof ApiDefinition[O]>() => ")
-      .inlineBlock(() => {
-        writer.writeLine("const registry = ").inlineBlock(() => {
-          model.operations.forEach((operation) => {
-            writer
-              .quote(operation.name)
-              .write(": ")
-              .inlineBlock(() => {
-                operation.implementations.forEach((impl) => {
-                  const params = `_ApiTypes.ApiPayload<ApiDefinition["${operation.name}"]["${impl.mimeType}"]>`;
-                  const response = `_ApiTypes.ApiResponse<ApiDefinition["${operation.name}"]["${impl.mimeType}"]>`;
-                  writer
-                    .quote(impl.mimeType)
-                    .write(": (params: ")
-                    .write(params)
-                    .write("): ")
-                    .write(response)
-                    .write(" => ")
-                    .inlineBlock(() => {
-                      writer.write(`throw new Error("not implemented")`);
-                    });
-                  writer.write(",");
-                  writer.newLine();
-                });
-              });
 
-            writer.write(",");
-            writer.newLine();
-          });
+    writer.writeLine('// eslint-disable-next-line @typescript-eslint/explicit-function-return-type');
+    writer.writeLine('const createRegistry = () => ').inlineBlock(() => {
+      writer.writeLine('const registry = ').inlineBlock(() => {
+        model.operations.forEach((operation) => {
+          writer
+            .quote(operation.name)
+            .write(': ')
+            .inlineBlock(() => {
+              operation.implementations.forEach((impl) => {
+                const params = `_ApiTypes.ApiPayload<ApiDefinition["${operation.name}"]["${impl.mimeType}"]>`;
+                const response = `_ApiTypes.ApiResponse<ApiDefinition["${operation.name}"]["${impl.mimeType}"]>`;
+                writer
+                  .quote(impl.mimeType)
+                  .write(': (params: ')
+                  .write(params)
+                  .write('): ')
+                  .write(response)
+                  .write(' => ')
+                  .inlineBlock(() => {
+                    writer.write('throw new Error("not implemented")');
+                  });
+                writer.write(',');
+                writer.newLine();
+              });
+            });
+
+          writer.write(',');
+          writer.newLine();
         });
-        writer.blankLine().write(registerOperationSnippet);
       });
+      writer.blankLine().write(registerOperationSnippet);
+    });
     writer.blankLine();
   }
 
-  private generatePathImplementation(model: RouterDefinition, writer: Writer) {
+  private generatePathImplementation(model: RouterDefinition, writer: Writer): void {
     if (!model.operations) {
       return;
     }
-    writer.writeLine("export const registry = createRegistry();");
-    writer.writeLine("export const router = new Router();");
+    writer.writeLine('export const registry = createRegistry();');
+    writer.writeLine('export const router = new Router();');
     model.operations.forEach((operation) => {
       writer
-        .write("router.")
+        .write('router.')
         .write(operation.method)
-        .write("(")
-        .quote(operation.path.replace(/\{(.*)\}/g, ":$1"))
-        .write(", (ctx, next) => ")
+        .write('(')
+        .quote(operation.path.replace(/\{(.*)\}/g, ':$1'))
+        .write(', (ctx, next) => ')
         .inlineBlock(() => writer.write(apiCallSnippet(operation)))
-        .write(");")
+        .write(');')
         .blankLine();
     });
   }
 }
 
-const apiCallSnippet = (operation: RouterOperation) =>
+const apiCallSnippet = (operation: RouterOperation): string =>
   `
 ${determineMimeType(operation)}
 ${generatePayload(operation)}
@@ -195,7 +199,7 @@ const registerOperationSnippet = `
         args: _ApiTypes.ApiPayload<ApiDefinition[Operation][MimeType]>
       ) => _ApiTypes.ApiResponse<ApiDefinition[Operation][MimeType]>
     ) {
-      registry[operation] = registry[operation] || {};
+      registry[operation] = registry[operation] ?? {};
       registry[operation][mimeType] = request as unknown as typeof registry[Operation][MimeType];
     },
     get() {
@@ -204,7 +208,7 @@ const registerOperationSnippet = `
   };
 `;
 
-const generatePayload = (routerOperation: RouterOperation) => {
+const generatePayload = (routerOperation: RouterOperation): string => {
   const cases: string[] = [];
 
   const pathImport = `const pathParams = ${createPathParamSchemaName(routerOperation)}.parse(ctx.params);\n`;
@@ -217,36 +221,36 @@ const generatePayload = (routerOperation: RouterOperation) => {
     cases.push(caseEntry);
   });
   return `
-  ${routerOperation.implementations.some((x) => x.params.length > 0) ? pathImport : ""}
-  ${routerOperation.implementations.some((x) => x.queryParams.length > 0) ? queryParamImport : ""}
+  ${routerOperation.implementations.some((x) => x.params.length > 0) ? pathImport : ''}
+  ${routerOperation.implementations.some((x) => x.queryParams.length > 0) ? queryParamImport : ''}
   let result: {body?: unknown, headers?: Record<string, string>, status?: number} = {};
   switch(mimeType) {
-${cases.join("\n")}
+${cases.join('\n')}
   }
   
   ctx.body = result.body;
-  ctx.set(result.headers || {});
-  ctx.status = result.status || 404;
+  ctx.set(result.headers ?? {});
+  ctx.status = result.status ?? 404;
   `;
 };
 
 const generateApiPayload = (implementation: RouterOperationImplementation): string => {
-  let fields: string[] = [];
-  if (implementation.params.length) {
-    fields.push("path: pathParams");
+  const fields: string[] = [];
+  if (implementation.params.length > 0) {
+    fields.push('path: pathParams');
   }
-  if (implementation.queryParams.length) {
-    fields.push("query: queryParams");
+  if (implementation.queryParams.length > 0) {
+    fields.push('query: queryParams');
   }
   return `{
-    ${fields.join(",\n")}
+    ${fields.join(',\n')}
   }`;
 };
 
-const determineMimeType = (routerOperation: RouterOperation) => {
+const determineMimeType = (routerOperation: RouterOperation): string => {
   const mimeTypes = Object.keys(
     routerOperation.allResponses().reduce((result, response) => ({ ...result, [response.mimeType]: true }), {})
-  ).join(`", "`);
+  ).join('", "');
 
   return `
   const mimeType = ctx.accepts(["${mimeTypes}"]);
@@ -258,9 +262,9 @@ const determineMimeType = (routerOperation: RouterOperation) => {
 };
 
 const createPathParamSchemaName = ({ name }: { name: string }): string => {
-  return pascalCase(name + "-" + "PathParameterSchema");
+  return pascalCase(name + '-' + 'PathParameterSchema');
 };
 
 const createQueryParamSchemaName = ({ name }: { name: string }): string => {
-  return pascalCase(name + "-" + "QueryParameterSchema");
+  return pascalCase(name + '-' + 'QueryParameterSchema');
 };

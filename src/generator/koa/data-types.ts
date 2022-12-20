@@ -1,14 +1,13 @@
-import { CodeGenerator } from "../code-generator";
-import { codeGenerator } from "../code-generator.decorator";
-import { Writer } from "../writer";
-import { TypeScriptGeneric, TypeScriptTypeAlias } from "../../model/generated-code-model";
+import { CodeGenerator } from '../code-generator';
+import { codeGenerator } from '../code-generator.decorator';
+import { Writer } from '../writer';
 
 /**
  * Data types that are used for glueing koa and our implementation.
  *
  * TODO: This doesn't use the object graph for now, as functions, generics and classes are missing.
  */
-@codeGenerator("api-types")
+@codeGenerator('api-types')
 export class DataTypeGenerator implements CodeGenerator<object> {
   generate(_: object, writer: Writer): Writer {
     writer
@@ -24,25 +23,25 @@ export class DataTypeGenerator implements CodeGenerator<object> {
       `
       )
       .writeLine(
-        "export type Response<TResponse extends {[key: number]: object}> = GeneralResponse<TResponse, keyof TResponse>;"
+        'export type Response<TResponse extends Record<number, object>> = GeneralResponse<TResponse, keyof TResponse>;'
       )
-      .writeLine("export type ApiOperation<TResponse extends { [status: number]: unknown }> = ")
-      .inlineBlock(() => writer.write("response: TResponse;"))
-      .write(";")
+      .writeLine('export interface ApiOperation<TResponse extends Record<number, unknown>> ')
+      .inlineBlock(() => writer.write('response: TResponse;'))
+      .write(';')
       .blankLine()
-      .writeLine("type StringKeyedMap = Record<string, unknown>;")
+      .writeLine('type StringKeyedMap = Record<string, unknown>;')
       .blankLine()
-      .writeLine("export interface Headers<Type extends StringKeyedMap> ")
-      .inlineBlock(() => writer.writeLine("header: Type;"))
+      .writeLine('export interface Headers<Type extends StringKeyedMap> ')
+      .inlineBlock(() => writer.writeLine('header: Type;'))
 
-      .writeLine("export interface PathParams<Type extends StringKeyedMap> ")
-      .inlineBlock(() => writer.writeLine("path: Type;"))
+      .writeLine('export interface PathParams<Type extends StringKeyedMap> ')
+      .inlineBlock(() => writer.writeLine('path: Type;'))
 
-      .writeLine("export interface QueryParams<Type extends StringKeyedMap> ")
-      .inlineBlock(() => writer.writeLine("query: Type;"))
+      .writeLine('export interface QueryParams<Type extends StringKeyedMap> ')
+      .inlineBlock(() => writer.writeLine('query: Type;'))
 
-      .writeLine("export interface Body<Type> ")
-      .inlineBlock(() => writer.writeLine("body: Type;"))
+      .writeLine('export interface Body<Type> ')
+      .inlineBlock(() => writer.writeLine('body: Type;'))
       .blankLine()
       .write(
         `
@@ -60,7 +59,7 @@ export type ImplFunction<Api> = Api extends ApiOperation<infer TResponse>
       `
       )
       .blankLine()
-      .write(`export type ApiResponse<Api> = Api extends ApiOperation<infer Response> ? Response : void;`);
+      .write('export type ApiResponse<Api> = Api extends ApiOperation<infer Response> ? Response : {};');
     return writer;
   }
 }

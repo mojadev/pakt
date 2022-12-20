@@ -1,6 +1,6 @@
-import { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
-import { parseType } from "./type-declarations";
-import { Responses, TypeModel } from "./types";
+import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
+import { parseType } from './type-declarations';
+import { Responses, TypeModel } from './types';
 
 export const parseResponses = (document: OpenAPIV3_1.Document, responses: OpenAPIV3_1.ResponsesObject): Responses => {
   return Object.keys(responses).reduce(
@@ -13,14 +13,14 @@ export const parseResponses = (document: OpenAPIV3_1.Document, responses: OpenAP
 };
 
 const parseResponseForStatusCode = (response: OpenAPIV3_1.ResponseObject): Record<string, TypeModel> => {
-  if (!response.content) {
+  if (response.content == null) {
     return {};
   }
   const content = response.content;
 
   return Object.keys(response.content as OpenAPIV3_1.MediaTypeObject).reduce((prev, current) => {
     const mediaTypeObject: OpenAPIV3.MediaTypeObject = content[current] as OpenAPIV3.MediaTypeObject;
-    if (!mediaTypeObject.schema) {
+    if (mediaTypeObject.schema == null) {
       return { ...prev };
     }
     return {

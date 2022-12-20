@@ -1,21 +1,21 @@
-import { getModelType } from "../model/code-model.decorator";
-import { Writer } from "./writer";
+import { getModelType } from '../model/code-model.decorator';
+import { Writer } from './writer';
 
-export type CodeGeneratorRegistry = Record<ModuleType, CodeGenerator<unknown>>;
+export type CodeGeneratorRegistry = Record<ModuleType, CodeGenerator<any>>;
 
 export class Registry {
   entries: CodeGeneratorRegistry = {};
 
-  public add(generator: CodeGenerator<unknown>) {
-    this.entries[getModelType(generator) || ""] = generator;
+  public add(generator: CodeGenerator<any>): void {
+    this.entries[getModelType(generator) ?? ''] = generator;
   }
 
-  public forModel(model: object): CodeGenerator<unknown> {
+  public forModel(model: object): CodeGenerator<any> {
     const modelType = getModelType(model);
     if (!modelType || !this.entries[modelType]) {
       return {
         generate: (_, writer = new Writer()) => {
-          writer.writeLine("/* Missing generator for " + modelType + " */");
+          writer.writeLine(`/* Missing generator for ${String(modelType)} */`);
           return writer;
         },
       };
@@ -30,23 +30,23 @@ export class Registry {
 }
 
 export interface CodeGenerator<T> {
-  generate(model: T, writer: Writer): Writer;
+  generate: (model: T, writer: Writer) => Writer;
 }
 
 export const generateCode = (model: object, registry: Registry): string => {
   const modelType = getModelType(model);
   if (!modelType) {
-    return "";
+    return '';
   }
 
   const generator = registry.forModel(model);
   if (!generator) {
-    return "";
+    return '';
   }
   return generator.generate(model, new Writer()).toString();
 };
 
-export const modelType = Symbol("modelType");
+export const modelType = Symbol('modelType');
 
 export interface CodeModel<ModelType extends string> {
   [modelType]: ModelType;

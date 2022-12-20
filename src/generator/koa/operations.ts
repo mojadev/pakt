@@ -1,11 +1,11 @@
-import { pascalCase } from "change-case";
-import { CodeGenerator, Registry } from "../code-generator";
-import { codeGenerator } from "../code-generator.decorator";
-import { identifyImports, simplifyImports } from "../typescript/mapper/identify-imports";
-import { Writer } from "../writer";
-import { EcmaScriptImport, RouterOperation, TypeScriptDataStructure } from "../../model/generated-code-model";
+import { pascalCase } from 'change-case';
+import { CodeGenerator, Registry } from '../code-generator';
+import { codeGenerator } from '../code-generator.decorator';
+import { identifyImports, simplifyImports } from '../typescript/mapper/identify-imports';
+import { Writer } from '../writer';
+import { EcmaScriptImport, RouterOperation, TypeScriptDataStructure } from '../../model/generated-code-model';
 
-@codeGenerator("router:responses")
+@codeGenerator('router:responses')
 export class OperationTypeGenerator implements CodeGenerator<RouterOperation> {
   constructor(private readonly registry: Registry) {}
 
@@ -17,7 +17,7 @@ export class OperationTypeGenerator implements CodeGenerator<RouterOperation> {
     return writer;
   }
 
-  private generateImports(model: RouterOperation, writer: Writer) {
+  private generateImports(model: RouterOperation, writer: Writer): void {
     const imports = simplifyImports(
       model
         .allResponses()
@@ -30,33 +30,33 @@ export class OperationTypeGenerator implements CodeGenerator<RouterOperation> {
     imports.forEach((importDeclaration) => {
       this.registry.generateCode(importDeclaration, writer);
     });
-    this.registry.generateCode(new EcmaScriptImport("api-types").addNamedImports(["ResponseTuple"]), writer);
+    this.registry.generateCode(new EcmaScriptImport('api-types').addNamedImports(['ResponseTuple']), writer);
   }
 
-  private generateResponseClasses(model: RouterOperation, writer: Writer) {
+  private generateResponseClasses(model: RouterOperation, writer: Writer): void {
     model.allResponses().forEach((response) => {
-      const responseName = pascalCase("Response_" + response.mimeType + "_" + response.status);
+      const responseName = pascalCase(`Response_${response.mimeType}_${response.status}`);
 
-      const payloadType = response.payload?.name || "void";
+      const payloadType = response.payload?.name ?? 'void';
       // TODO: Implement TypeScriptClass object
       // Why: So we don't build classes inline here using string operations and inline Type References for imports
       writer
-        .write("class ")
+        .write('class ')
         .write(responseName)
-        .write(" implements ApiOperation<")
+        .write(' implements ApiOperation<')
         .write(payloadType)
-        .write(">")
+        .write('>')
         .inlineBlock(() => {
-          writer.write("public readonly status = ").write(String(response.status)).write(";").blankLine();
-          writer.write("constructor(public readonly payload: ").write(payloadType).write(")").inlineBlock();
+          writer.write('public readonly status = ').write(String(response.status)).write(';').blankLine();
+          writer.write('constructor(public readonly payload: ').write(payloadType).write(')').inlineBlock();
         })
         .blankLine();
     });
   }
 
-  private generateTypes(model: RouterOperation, writer: Writer) {
+  private generateTypes(model: RouterOperation, writer: Writer): void {
     model.allResponses().forEach((response) => {
-      if (!response.payload) {
+      if (response.payload == null) {
         return;
       }
       const generator = this.registry.forModel(response.payload);

@@ -1,7 +1,7 @@
-import { modelType } from "../generator/code-generator";
+import { modelType } from '../generator/code-generator';
 
 export function codeModel(type: string) {
-  return function <T extends { new (...args: any[]): {} }>(constructor: T) {
+  return function <T extends new (...args: any[]) => {}>(constructor: T) {
     return class extends constructor {
       [modelType] = type;
     };
@@ -16,7 +16,7 @@ const isCodeModel = (model: object): model is CodeModel => {
   return modelType in model;
 };
 
-export function getModelType(codeModel: object) {
+export function getModelType(codeModel: object): string | undefined {
   if (!isCodeModel(codeModel)) {
     return;
   }

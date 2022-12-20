@@ -1,13 +1,13 @@
-import { Folder, TypeScriptModule } from "model";
-import { generateSource } from "./source-folder";
-import { mkdtemp, rm, readdir, readFile } from "fs/promises";
-import { join } from "path";
+import { mkdtemp, readdir, readFile, rm } from 'fs/promises';
+import { Folder, TypeScriptModule } from 'model';
+import { join } from 'path';
+import { generateSource } from './source-folder';
 
-describe("Source folder generator", () => {
+describe('Source folder generator', () => {
   let tmpPath: string;
 
   beforeEach(async () => {
-    tmpPath = await mkdtemp("unit-test");
+    tmpPath = await mkdtemp('unit-test');
   });
 
   afterEach(async () => {
@@ -16,13 +16,13 @@ describe("Source folder generator", () => {
     }
   });
 
-  it("should create folders in the filesystem for every folder node under the root", async () => {
-    const folder: Folder = new Folder("root", [
+  it('should create folders in the filesystem for every folder node under the root', async () => {
+    const folder: Folder = new Folder('root', [
       {
-        name: "folder1",
+        name: 'folder1',
         children: [
-          { name: "folder1_child", children: [] },
-          { name: "folder2", children: [] },
+          { name: 'folder1_child', children: [] },
+          { name: 'folder2', children: [] },
         ],
       },
     ]);
@@ -30,26 +30,26 @@ describe("Source folder generator", () => {
     await generateSource(folder, tmpPath);
 
     const expectedRoot = await readdir(tmpPath);
-    const expectedSubFolder = await readdir(join(tmpPath, "folder1"));
+    const expectedSubFolder = await readdir(join(tmpPath, 'folder1'));
 
-    expect(expectedRoot).toEqual(["folder1"]);
-    expect(expectedSubFolder).toEqual(["folder1_child", "folder2"]);
+    expect(expectedRoot).toEqual(['folder1']);
+    expect(expectedSubFolder).toEqual(['folder1_child', 'folder2']);
   });
 
-  it.skip("should generate typescript files for TypeScript Module definitions", async () => {
-    const folder = new Folder("root", [
+  it.skip('should generate typescript files for TypeScript Module definitions', async () => {
+    const folder = new Folder('root', [
       {
-        name: "api",
-        children: [new TypeScriptModule("index.ts")],
+        name: 'api',
+        children: [new TypeScriptModule('index.ts')],
       },
-      new TypeScriptModule("router.ts"),
+      new TypeScriptModule('router.ts'),
     ]);
 
     await generateSource(folder, tmpPath);
-    const routerTs = await readFile(join(tmpPath, "router.ts"));
-    const indexTs = await readFile(join(tmpPath, "api", "index.ts"));
+    const routerTs = await readFile(join(tmpPath, 'router.ts'));
+    const indexTs = await readFile(join(tmpPath, 'api', 'index.ts'));
 
-    expect(routerTs.toString("utf-8")).toEqual("");
-    expect(indexTs.toString("utf-8")).toEqual("");
+    expect(routerTs.toString('utf-8')).toEqual('');
+    expect(indexTs.toString('utf-8')).toEqual('');
   });
 });

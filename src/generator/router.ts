@@ -1,17 +1,17 @@
-import { camelCase, pascalCase } from "change-case";
+import { camelCase, pascalCase } from 'change-case';
+import { generateCodeModelForType } from 'generator/typescript/mapper';
 import {
-  Response,
-  RouterOperation,
   Parameter,
-  RouterDefinition,
   RequestParam,
+  Response,
   ReturnCode,
+  RouterDefinition,
+  RouterOperation,
   RouterPath,
   RoutingModel,
-} from "model";
-import { generateCodeModelForType } from "generator/typescript/mapper";
+} from 'model';
 
-export const toToRouterCodeModel = (routerModel: RoutingModel) => {
+export const toToRouterCodeModel = (routerModel: RoutingModel): RouterDefinition => {
   const model = new RouterDefinition();
   routerModel.routerPaths.map(mapToRouterCodeModel).forEach((codeModel) => model.addOperation(codeModel));
   return model;
@@ -55,13 +55,13 @@ function createRespponseCodeModel(
     } as Response);
 }
 
-function getMimeTypeStatusMap(path: RouterPath) {
+function getMimeTypeStatusMap(path: RouterPath): Record<string, Set<ReturnCode>> {
   const statusMap: Record<string, Set<ReturnCode>> = {};
   Object.entries(path.responses).forEach(([status, mimeTypeMap]) => {
     const mimeTypes = Object.keys(mimeTypeMap);
-    if (!mimeTypes.length) {
-      statusMap["*/*"] = statusMap["*/*"] ?? new Set();
-      statusMap["*/*"].add(status);
+    if (mimeTypes.length === 0) {
+      statusMap['*/*'] = statusMap['*/*'] ?? new Set();
+      statusMap['*/*'].add(status);
     }
     mimeTypes.forEach((mimeType) => {
       statusMap[mimeType] = statusMap[mimeType] ?? new Set();
@@ -72,13 +72,13 @@ function getMimeTypeStatusMap(path: RouterPath) {
   return statusMap;
 }
 
-function getRequestOperationTypeName(path: RouterPath, mimeType: string) {
-  const typeName = pascalCase(mimeType.replace(/\//g, "_"));
+function getRequestOperationTypeName(path: RouterPath, mimeType: string): string {
+  const typeName = pascalCase(mimeType.replace(/\//g, '_'));
   return `Handle${pascalCase(path.operation)}${typeName}Request`;
 }
 
 export const createResponseTypeName = (operationId: string, mimeType: string, returnCode: ReturnCode): string => {
-  return pascalCase(`${operationId} ${returnCode} ${mimeType.replace("/", " ")} ResponsePayload`);
+  return pascalCase(`${operationId} ${returnCode} ${mimeType.replace('/', ' ')} ResponsePayload`);
 };
 
 /**

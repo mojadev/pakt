@@ -1,7 +1,7 @@
 /**
  * Static utility types
  */
-export const utilityTypes = () => {
+export const utilityTypes = (): string => {
   return `
 /**
  * An implementation for a api triggered operation.

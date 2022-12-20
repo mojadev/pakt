@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
   ArrowFunction,
   CallExpression,
@@ -9,7 +10,7 @@ import {
   SyntaxKind,
   ts,
   Type,
-} from "ts-morph";
+} from 'ts-morph';
 
 /**
  * Perform expectations on TypeScript source code.
@@ -25,12 +26,12 @@ import {
  */
 export const expectSource = (sourceContent: string, root?: string) => {
   const project = new Project();
-  let sourceFile: SourceFile = project.createSourceFile("assert.ts", sourceContent);
+  let sourceFile: SourceFile = project.createSourceFile('assert.ts', sourceContent);
   if (root) {
     sourceFile = project.createSourceFile(root, sourceFile.getFunction(root)?.getBodyText());
   }
 
-  function functionMatcher(varName: string, functionName: string) {
+  function functionMatcher(varName: string, functionName: string): ReturnType<typeof argumentMatcher> {
     const expressions = sourceFile
       .getStatements()
       .filter((statement) => statement.getKind() === SyntaxKind.ExpressionStatement);
@@ -48,7 +49,7 @@ export const expectSource = (sourceContent: string, root?: string) => {
     } catch (e) {
       console.error(`Could not find function call ${varName}.${functionName} in ${sourceContent}`);
       console.log(
-        `Found functions`,
+        'Found functions',
         functionCalls.map((x) => x.getName())
       );
       throw e;
@@ -71,7 +72,7 @@ export const expectSource = (sourceContent: string, root?: string) => {
       withCallbackAt: (index: number) => {
         const callbackCandidate = context.getArguments()[index];
         const callback =
-          callbackCandidate.asKind(SyntaxKind.ArrowFunction) ||
+          callbackCandidate.asKind(SyntaxKind.ArrowFunction) ??
           callbackCandidate.asKindOrThrow(SyntaxKind.FunctionDeclaration);
         return functionAssertions(callback);
       },
@@ -108,7 +109,7 @@ export const expectSource = (sourceContent: string, root?: string) => {
         const found = allImports.includes(namedImport);
         if (!found) {
           throw new Error(
-            `Could not find named import ${namedImport} in ${moduleName} (found ${allImports.join(",")})`
+            `Could not find named import ${namedImport} in ${moduleName} (found ${allImports.join(',')})`
           );
         }
       },
@@ -118,7 +119,7 @@ export const expectSource = (sourceContent: string, root?: string) => {
   function typeAliasMatcher(aliasName: string, typeDeclaration?: string) {
     const typeAlias = sourceFile.getTypeAlias(aliasName);
 
-    if (!typeAlias) {
+    if (typeAlias == null) {
       throw new Error(`Type ${aliasName} does not exist in ${sourceContent}`);
     }
     if (typeDeclaration) {
@@ -129,7 +130,7 @@ export const expectSource = (sourceContent: string, root?: string) => {
 
   function interfaceMatcher(name: string, definition?: Record<string, string>) {
     const interfaceDeclaration = sourceFile.getInterfaceOrThrow(name);
-    if (definition) {
+    if (definition != null) {
       Object.keys(definition).forEach((propertyName) => {
         const property = interfaceDeclaration.getProperty(propertyName);
         expect(property?.getType().getText(interfaceDeclaration)).toEqual(definition[propertyName]);
@@ -165,8 +166,8 @@ export const expectSource = (sourceContent: string, root?: string) => {
 
   function variableDeclarationMatcher(variableName: string, definition: string) {
     const variableDeclaration = sourceFile.getVariableDeclarationOrThrow(variableName);
-    expect(variableDeclaration.getVariableStatement()?.getDeclarations()[0].getText().replace(/ /g, "")).toEqual(
-      definition.replace(/ /g, "")
+    expect(variableDeclaration.getVariableStatement()?.getDeclarations()[0].getText().replace(/ /g, '')).toEqual(
+      definition.replace(/ /g, '')
     );
   }
 
@@ -174,7 +175,7 @@ export const expectSource = (sourceContent: string, root?: string) => {
     const variableDeclaration = sourceFile.getVariableDeclarationOrThrow(variableName);
     return {
       containing: (value: string) => {
-        expect(variableDeclaration.getVariableStatement()?.getDeclarations()[0].getText().replace(/ /g, "")).toContain(
+        expect(variableDeclaration.getVariableStatement()?.getDeclarations()[0].getText().replace(/ /g, '')).toContain(
           value
         );
       },
@@ -201,10 +202,10 @@ export const expectSource = (sourceContent: string, root?: string) => {
         });
         return functionAssertions(functionUnderTest);
       },
-      withBody: (matcher: { (expectBody: ReturnType<typeof expectSource>): void }) => {
+      withBody: (matcher: (expectBody: ReturnType<typeof expectSource>) => void) => {
         const contentBody = functionUnderTest.getBody()?.getChildSyntaxListOrThrow();
 
-        matcher(expectSource(contentBody?.getText() || ""));
+        matcher(expectSource(contentBody?.getText() ?? ''));
         return functionAssertions(functionUnderTest);
       },
     };
@@ -221,7 +222,7 @@ export const expectSource = (sourceContent: string, root?: string) => {
           .map((clause) => clause.asKind(SyntaxKind.CaseClause) as CaseClause)
           .filter(Boolean)
           .find((clause) => clause.getExpression().getText() === identifier);
-        if (!matchingCase) {
+        if (matchingCase == null) {
           throw new Error(`No clause found with identifier ${identifier} in source ${sourceContent}`);
         }
       },
@@ -238,7 +239,7 @@ export const expectSource = (sourceContent: string, root?: string) => {
       toImplementInterface: (interfaceName: string) => {
         const allImplements = classDeclaration.getImplements().map((x) => x.getText());
         if (!allImplements.includes(interfaceName)) {
-          throw new Error(`Could not find interface ${interfaceName} in implements (found ${allImplements.join(",")})`);
+          throw new Error(`Could not find interface ${interfaceName} in implements (found ${allImplements.join(',')})`);
         }
         return classAssertions(classDeclaration);
       },
@@ -252,7 +253,7 @@ export const expectSource = (sourceContent: string, root?: string) => {
 
   function classDeclarationMatcher(
     className: string,
-    sourceMatcherFn: { (assert: ReturnType<typeof classAssertions>): void }
+    sourceMatcherFn: (assert: ReturnType<typeof classAssertions>) => void
   ) {
     const classDeclaration = sourceFile.getClassOrThrow(className);
     sourceMatcherFn(classAssertions(classDeclaration));

@@ -1,17 +1,17 @@
-import { getModelType, TypeScriptInterface, TypeScriptObjectTypeLiteral, TypeScriptTypeAlias } from "model";
-import { CodeGenerator, Registry } from "generator/code-generator";
-import { codeGenerator } from "generator/code-generator.decorator";
-import { Writer } from "generator/writer";
+import { CodeGenerator, Registry } from 'generator/code-generator';
+import { codeGenerator } from 'generator/code-generator.decorator';
+import { Writer } from 'generator/writer';
+import { getModelType, TypeScriptInterface, TypeScriptObjectTypeLiteral, TypeScriptTypeAlias } from 'model';
 
-@codeGenerator("interface")
+@codeGenerator('interface')
 export class TypeScriptInterfaceGenerator implements CodeGenerator<TypeScriptInterface> {
   constructor(private readonly registry: Registry) {}
 
-  generate(interfaceModel: TypeScriptInterface, writer = new Writer()) {
-    writer.conditionalWrite(interfaceModel.exported, () => "export ");
+  generate(interfaceModel: TypeScriptInterface, writer = new Writer()): Writer {
+    writer.conditionalWrite(interfaceModel.exported, () => 'export ');
     writer.write(`interface ${interfaceModel.name} `);
 
-    const fieldInterface = this.registry.entries["field:interface"];
+    const fieldInterface = this.registry.entries['field:interface'];
     if (!fieldInterface) {
       writer.inlineBlock();
       writer.blankLine();
@@ -23,15 +23,15 @@ export class TypeScriptInterfaceGenerator implements CodeGenerator<TypeScriptInt
   }
 }
 
-@codeGenerator("objectType")
+@codeGenerator('objectType')
 export class TypeScriptObjectTypeDefinitionGenerator implements CodeGenerator<TypeScriptObjectTypeLiteral> {
   constructor(private readonly registry: Registry) {}
 
-  generate(interfaceModel: TypeScriptInterface, writer = new Writer()) {
-    writer.conditionalWrite(interfaceModel.exported, () => "export ");
+  generate(interfaceModel: TypeScriptInterface, writer = new Writer()): Writer {
+    writer.conditionalWrite(interfaceModel.exported, () => 'export ');
     writer.write(`type ${interfaceModel.name} = `);
 
-    const fieldInterface = this.registry.entries["field:interface"];
+    const fieldInterface = this.registry.entries['field:interface'];
     if (!fieldInterface) {
       writer.inlineBlock();
       writer.blankLine();
@@ -42,7 +42,7 @@ export class TypeScriptObjectTypeDefinitionGenerator implements CodeGenerator<Ty
     return writer;
   }
 }
-@codeGenerator("field:alias")
+@codeGenerator('field:alias')
 export class TypeScriptAliasFieldGenerator implements CodeGenerator<TypeScriptTypeAlias> {
   generate(model: TypeScriptTypeAlias, writer: Writer): Writer {
     writer.write(model.alias);
@@ -50,31 +50,31 @@ export class TypeScriptAliasFieldGenerator implements CodeGenerator<TypeScriptTy
   }
 }
 
-@codeGenerator("field:interface")
+@codeGenerator('field:interface')
 export class TypeScriptInterfaceFieldGenerator implements CodeGenerator<TypeScriptInterface> {
   constructor(private readonly registry: Registry) {}
 
   generate({ definition }: TypeScriptInterface, writer: Writer): Writer {
     writer.inlineBlock(() =>
       Object.entries(definition).forEach(([fieldName, fieldType]) => {
-        if (fieldName.toString().match(/^\w+$/)) {
+        if (fieldName.toString().match(/^\w+$/) != null) {
           writer.write(`${fieldName}`);
         } else {
           writer.quote(`${fieldName}`);
         }
-        if (!fieldName.toString().match(/^\d+$/)) {
-          writer.conditionalWrite(!fieldType.required, "?");
+        if (fieldName.toString().match(/^\d+$/) == null) {
+          writer.conditionalWrite(!fieldType.required, '?');
         }
-        writer.write(":");
+        writer.write(':');
         writer.space();
 
-        const fieldGenerator = this.registry.entries["field:" + getModelType(fieldType)];
+        const fieldGenerator = this.registry.entries['field:' + String(getModelType(fieldType))];
         if (!fieldGenerator) {
-          writer.write("unknown");
+          writer.write('unknown');
         } else {
           fieldGenerator.generate(fieldType, writer);
         }
-        writer.write(";");
+        writer.write(';');
         writer.newLine();
       })
     );
