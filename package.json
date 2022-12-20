@@ -12,7 +12,7 @@
     "e2e:echo-server": "ts-node src/e2e/echo-server/server.ts",
     "prepare": "husky install",
     "pre-commit": "eslint src/",
-    "commit-msg": "commitlint -E $1",
+    "commit-msg": "commitlint -e $1",
     "prepare-commit-msg": "echo ''"
   },
   "private": false,
