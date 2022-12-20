@@ -223,4 +223,4 @@ export interface Parameter {
 
 type MimeType = string;
 
-export const toPlainObject = (x: unknown): unknown => JSON.parse(JSON.stringify(x));
+export const toPlainObject = (x: unknown): any => JSON.parse(JSON.stringify(x));

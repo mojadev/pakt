@@ -9,7 +9,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface Matchers<R> {
       // eslint-disable-next-line @typescript-eslint/method-signature-style
-      functiontoTranspile(tsOptions?: tsc.CompilerOptions): CustomMatcherResult;
+      toTranspile(tsOptions?: tsc.CompilerOptions): CustomMatcherResult;
     }
   }
 }

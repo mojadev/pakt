@@ -88,13 +88,11 @@ describe('Koa router generator', () => {
     const source = generator.generate(router, new Writer()).toString();
 
     expectSource(source)
-      .toContainTypeAlias('ApiDefinition')
-      .withObjectContainingField('getPets')
-      .withObjectContainingField('application/json');
+      .toContainInterfaceDeclaration('ApiDefinition')
+      .withRequiredProperty('getPets', (property) => property.includes('application/json'));
     expectSource(source)
-      .toContainTypeAlias('ApiDefinition')
-      .withObjectContainingField('getPets')
-      .withObjectContainingField('application/xml');
+      .toContainInterfaceDeclaration('ApiDefinition')
+      .withRequiredProperty('getPets', (property) => property.includes('application/xml'));
   });
 
   it('should generate imports for path parameter schema parsing when pathparams are defined in the operation', () => {

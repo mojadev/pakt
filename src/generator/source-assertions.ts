@@ -138,14 +138,20 @@ export const expectSource = (sourceContent: string, root?: string) => {
     }
 
     return {
-      withRequiredProperty: (property: string | number) => {
+      withRequiredProperty: (property: string | number, matcher?: (value: string) => void) => {
         const propertyInstance = interfaceDeclaration.getPropertyOrThrow(property.toString());
         expect(propertyInstance?.getQuestionTokenNode()).not.toBeDefined();
+        if (matcher) {
+          matcher(propertyInstance.getText());
+        }
         return interfaceMatcher(name, definition);
       },
-      withOptionalProperty: (property: string | number) => {
+      withOptionalProperty: (property: string | number, matcher?: (value: string) => void) => {
         const propertyInstance = interfaceDeclaration.getPropertyOrThrow(property.toString());
         expect(propertyInstance?.getQuestionTokenNode()).toBeDefined();
+        if (matcher) {
+          matcher(propertyInstance.getText());
+        }
         return interfaceMatcher(name, definition);
       },
       withoutExport: () => {
