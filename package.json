@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "ci": "SKIP_E2E=true jest",
+    "ci": "SKIP_E2E=true jest --coverage --collectCoverageFrom='./src/**'",
     "generate-model": "NODE_PATH=./src ts-node ./src/cli generate src/__test__/basic.yaml ./test/simple-koa/generated",
     "e2e:echo-server": "ts-node src/e2e/echo-server/server.ts",
     "prepare": "husky install",

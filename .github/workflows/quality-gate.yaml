@@ -16,7 +16,6 @@ jobs:
         with:
           node-version: '16'
       - run: yarn install
-      - run: yarn ci
       - run: yarn coverage
       - uses: actions/upload-artifact@v2
         with:
