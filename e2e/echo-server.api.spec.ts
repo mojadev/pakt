@@ -1,5 +1,5 @@
 import { KoaRecipe } from 'generator/koa/koa';
-import { expectSource } from 'generator/source-assertions';
+import { expectSource } from 'generator/verify/source-assertions';
 import { importModel } from 'model';
 import path from 'path';
 

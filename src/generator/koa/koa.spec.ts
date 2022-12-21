@@ -1,7 +1,7 @@
 import { importModel } from '../../model';
 import { KoaRecipe } from './koa';
 import { join } from 'path';
-import { expectSource } from '../source-assertions';
+import { expectSource } from '../verify/source-assertions';
 
 describe('Koa recipe', () => {
   const model = importModel(join(__dirname, '__test__', 'api.yaml'));

@@ -19,7 +19,27 @@ paths:
           schema: 
             type: string
       
-
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                "$ref": "#/components/schemas/EchoResponse"  
+    post:
+      operationId: echoPostRequest
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema: 
+            type: string
+     
+      requestBody:
+         content:
+           application/json:
+            schema: 
+              "$ref": "#/components/schemas/ArbitaryRequestBody"  
       responses:
         200:
           description: Successful response
@@ -30,6 +50,9 @@ paths:
 
 components:
   schemas:
+    ArbitaryRequestBody:
+      type: object
+      additionalProperties: true
     EchoResponse:
       type: object
       properties:

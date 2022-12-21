@@ -1,4 +1,4 @@
-import { expectSource } from 'generator/source-assertions';
+import { expectSource } from 'generator/verify/source-assertions';
 import { Writer } from 'generator/writer';
 import { EcmaScriptImport } from 'model';
 import { EcmaScriptImportGenerator } from './import';

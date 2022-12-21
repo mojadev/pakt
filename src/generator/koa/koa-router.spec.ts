@@ -1,5 +1,5 @@
 import { Registry } from '../code-generator';
-import { expectSource } from '../source-assertions';
+import { expectSource } from '../verify/source-assertions';
 import {
   TypeScriptCompositeFieldGenerator,
   TypeScriptCompositeGenerator,

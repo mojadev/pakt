@@ -15,5 +15,15 @@ registry.register('echoRequest', 'application/json', (args) => {
   };
 });
 
+registry.register('echoPostRequest', 'application/json', (args) => {
+  return {
+    body: {
+      path: [{ key: 'path', value: args.path.path }],
+      body: args.body,
+    },
+    status: 200 as const,
+  };
+});
+
 console.log('Starting at port', port);
 app.listen(port);

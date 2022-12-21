@@ -1,7 +1,7 @@
 import { Registry } from '../code-generator';
-import { expectSource } from '../source-assertions';
+import { expectSource } from '../verify/source-assertions';
 import {
- EcmaScriptImportGenerator,
+  EcmaScriptImportGenerator,
   TypeScriptAliasFieldGenerator,
   TypeScriptInterfaceFieldGenerator,
   TypeScriptInterfaceGenerator,
@@ -31,7 +31,7 @@ describe('Operation types code generator', () => {
           status: 200,
           payload: new TypeScriptInterface('GetPets200Response').addField(
             'message',
-            new TypeScriptTypeAlias('message', 'string'),
+            new TypeScriptTypeAlias('message', 'string')
           ),
         },
       ],
@@ -53,7 +53,7 @@ describe('Operation types code generator', () => {
           status: 200,
           payload: new TypeScriptInterface('GetPets200Response').addField(
             'message',
-            new TypeScriptTypeAlias('message', 'Message').withAliasSource('components/schema'),
+            new TypeScriptTypeAlias('message', 'Message').withAliasSource('components/schema')
           ),
         },
       ],
@@ -75,7 +75,7 @@ describe('Operation types code generator', () => {
           status: 200,
           payload: new TypeScriptInterface('GetPets200Response').addField(
             'message',
-            new TypeScriptTypeAlias('message', 'Message').withAliasSource('components/schema'),
+            new TypeScriptTypeAlias('message', 'Message').withAliasSource('components/schema')
           ),
         },
       ],
@@ -97,14 +97,14 @@ describe('Operation types code generator', () => {
           status: 200,
           payload: new TypeScriptInterface('GetPets200Response').addField(
             'message',
-            new TypeScriptTypeAlias('message', 'Message').withAliasSource('components/schema'),
+            new TypeScriptTypeAlias('message', 'Message').withAliasSource('components/schema')
           ),
         },
         {
           status: 400,
           payload: new TypeScriptInterface('GetPets200Response').addField(
             'message',
-            new TypeScriptTypeAlias('message', 'Message').withAliasSource('components/schema'),
+            new TypeScriptTypeAlias('message', 'Message').withAliasSource('components/schema')
           ),
         },
       ],

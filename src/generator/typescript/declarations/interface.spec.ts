@@ -1,5 +1,5 @@
 import { Registry } from 'generator/code-generator';
-import { expectSource } from 'generator/source-assertions';
+import { expectSource } from 'generator/verify/source-assertions';
 import { TypeScriptInterface, TypeScriptTypeAlias } from 'model';
 import {
   TypeScriptAliasFieldGenerator,
