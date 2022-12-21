@@ -13,7 +13,7 @@ describe('Generic code generator', () => {
 
   it('should resolve alias chllds as GenericName<AliasName>', () => {
     const sourceCode = generator
-      .generate(new TypeScriptGeneric('GenericType', 'GenericName', new TypeScriptTypeAlias('alias', 'AliasName')))
+      .generate(new TypeScriptGeneric('GenericType', 'GenericName', [new TypeScriptTypeAlias('alias', 'AliasName')]))
       .toString();
 
     expectSource(sourceCode).toContainTypeAlias('GenericType', 'GenericName<AliasName>');
@@ -27,7 +27,7 @@ describe('Generic code generator', () => {
     genericTypeValue.addField('field2', genericTypeValue2);
 
     const sourceCode = generator
-      .generate(new TypeScriptGeneric('GenericType', 'GenericName', genericTypeValue))
+      .generate(new TypeScriptGeneric('GenericType', 'GenericName', [genericTypeValue]))
       .toString();
 
     expectSource(sourceCode).toContainTypeAlias(
@@ -39,5 +39,18 @@ describe('Generic code generator', () => {
   };
 }>`
     );
+  });
+
+  it('should write multiple generic fields when provided', () => {
+    const sourceCode = generator
+      .generate(
+        new TypeScriptGeneric('GenericType', 'GenericName', [
+          new TypeScriptTypeAlias('alias', 'AliasName'),
+          new TypeScriptTypeAlias('alias', 'AliasName2'),
+        ])
+      )
+      .toString();
+
+    expectSource(sourceCode).toContainTypeAlias('GenericType', 'GenericName<AliasName, AliasName2>');
   });
 });

@@ -138,6 +138,10 @@ export const expectSource = (sourceContent: string, root?: string) => {
     }
 
     return {
+      withExtendsClauseToEqual: (index: number, expected: string) => {
+        expect(interfaceDeclaration.getExtends()[index].getText()).toEqual(expected);
+        return interfaceMatcher(name, definition);
+      },
       withRequiredProperty: (property: string | number, matcher?: (value: string) => void) => {
         const propertyInstance = interfaceDeclaration.getPropertyOrThrow(property.toString());
         expect(propertyInstance?.getQuestionTokenNode()).not.toBeDefined();

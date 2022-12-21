@@ -35,7 +35,7 @@ export const identifyImports = (dataStructure: TypeScriptDataStructure, isRoot =
     imports = [...imports, ...dataStructure.children.flatMap((value) => identifyImports(value, true))];
   }
   if (isType<TypeScriptGeneric>('generic', dataStructure)) {
-    imports = [...imports, ...identifyImports(dataStructure.templateType)];
+    imports = [...imports, ...dataStructure.templateType.flatMap((type) => identifyImports(type))];
   }
 
   const reduced = imports.reduce<Record<string, EcmaScriptImport>>((result, current) => {

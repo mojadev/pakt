@@ -58,15 +58,11 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
           implementation.mimeType,
           new TypeScriptTypeComposition('apiOperation', 'intersection')
             .addChild(
-              new TypeScriptGeneric(
-                'string',
-                '_ApiTypes.ApiOperation',
-                new TypeScriptGeneric(
-                  'response',
-                  '_ApiTypes.Response',
-                  operation.responseInterface(implementation.mimeType)
-                )
-              )
+              new TypeScriptGeneric('string', '_ApiTypes.ApiOperation', [
+                new TypeScriptGeneric('response', '_ApiTypes.Response', [
+                  operation.responseInterface(implementation.mimeType),
+                ]),
+              ])
             )
             .addChildIf(() => implementation.params.length > 0, this.generateParamsInterface(implementation))
             .addChildIf(() => implementation.queryParams.length > 0, this.generateQueryParamsInterface(implementation)),
@@ -83,7 +79,7 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
       interfaceDefinition.addField(param.name, param.type, true);
     });
 
-    return new TypeScriptGeneric('string', '_ApiTypes.PathParams', interfaceDefinition);
+    return new TypeScriptGeneric('string', '_ApiTypes.PathParams', [interfaceDefinition]);
   }
 
   private generateQueryParamsInterface(implementation: RouterOperationImplementation): TypeScriptDataStructure {
@@ -92,7 +88,7 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
       interfaceDefinition.addField(param.name, param.type, param.required);
     });
 
-    return new TypeScriptGeneric('string', '_ApiTypes.QueryParams', interfaceDefinition);
+    return new TypeScriptGeneric('string', '_ApiTypes.QueryParams', [interfaceDefinition]);
   }
 
   private createSchemaImport(model: RouterDefinition): EcmaScriptImport {

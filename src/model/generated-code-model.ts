@@ -100,11 +100,18 @@ export class TypeScriptTypeComposition {
 export class TypeScriptInterface {
   definition: TypeScriptInterfaceDefinition = {};
 
+  extends: TypeScriptDataStructure[] = [];
+
   constructor(public readonly name: string, public readonly exported = true) {}
 
   addField(fieldName: FieldName, value: TypeScriptDataStructure, required = false): this {
     this.definition[fieldName] = value;
     this.definition[fieldName].required = required;
+    return this;
+  }
+
+  addExtends(type: TypeScriptDataStructure): this {
+    this.extends.push(type);
     return this;
   }
 }
@@ -127,7 +134,7 @@ export class TypeScriptGeneric {
   constructor(
     public readonly name: string,
     public readonly genericName: string,
-    public readonly templateType: TypeScriptDataStructure,
+    public readonly templateType: TypeScriptDataStructure[],
     public readonly exported = true
   ) {}
 }
@@ -144,6 +151,7 @@ export type TypeScriptDataStructure =
   | TypeScriptTypeAlias
   | TypeScriptInterface
   | TypeScriptTypeComposition
+  | TypeScriptObjectTypeLiteral
   | TypeScriptGeneric;
 
 export type TypeScriptInterfaceDefinition = Record<

@@ -15,5 +15,5 @@ export const arrayHandler: TypeHandlerCandidate = (name, type) => {
   if (isType('alias', resolvedArrayType) && type.children[0].type !== 'ref') {
     return new TypeScriptTypeAlias(name, `${type.children[0].type}[]`);
   }
-  return new TypeScriptGeneric(name, 'Array', resolvedArrayType);
+  return new TypeScriptGeneric(name, 'Array', [resolvedArrayType]);
 };

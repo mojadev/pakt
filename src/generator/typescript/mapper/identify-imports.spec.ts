@@ -69,11 +69,9 @@ describe('Import identifier', () => {
 
   it('should resolve imports for generic types', () => {
     const imports = identifyImports(
-      new TypeScriptGeneric(
-        'name',
-        'Array',
-        new TypeScriptTypeAlias('User_0', 'Person').withAliasSource('components/schema')
-      )
+      new TypeScriptGeneric('name', 'Array', [
+        new TypeScriptTypeAlias('User_0', 'Person').withAliasSource('components/schema'),
+      ])
     );
 
     expect(imports.length).toEqual(1);

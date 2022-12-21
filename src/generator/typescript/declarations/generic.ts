@@ -23,15 +23,19 @@ export class TypeScriptGenericFieldGenerator implements CodeGenerator<TypeScript
   constructor(private readonly registry: Registry) {}
 
   generate(model: TypeScriptGeneric, writer: Writer = new Writer()): Writer {
-    const modelType = getModelType(model.templateType) ?? '';
-    const generator = this.registry.entries['field:' + modelType];
     writer.write(model.genericName).write('<');
-    if (!generator) {
-      writer.write('unknown');
-    } else {
-      generator.generate(model.templateType, writer);
-    }
-
+    model.templateType.forEach((templateType, idx) => {
+      const modelType = getModelType(templateType) ?? '';
+      const generator = this.registry.entries['field:' + modelType];
+      if (idx > 0) {
+        writer.write(', ');
+      }
+      if (!generator) {
+        writer.write('unknown');
+      } else {
+        generator.generate(templateType, writer);
+      }
+    });
     writer.write('>');
     return writer;
   }

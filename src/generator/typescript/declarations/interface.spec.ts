@@ -1,6 +1,8 @@
 import { Registry } from 'generator/code-generator';
 import { expectSource } from 'generator/verify/source-assertions';
-import { TypeScriptInterface, TypeScriptTypeAlias } from 'model';
+import { TypeScriptGeneric, TypeScriptInterface, TypeScriptTypeAlias } from 'model';
+import { TypeScriptAliasGenerator } from './alias';
+import { TypeScriptGenericFieldGenerator } from './generic';
 import {
   TypeScriptAliasFieldGenerator,
   TypeScriptInterfaceFieldGenerator,
@@ -11,6 +13,8 @@ describe('Interface code generator', () => {
   const registry = new Registry();
   registry.add(new TypeScriptAliasFieldGenerator());
   registry.add(new TypeScriptInterfaceFieldGenerator(registry));
+  registry.add(new TypeScriptGenericFieldGenerator(registry));
+  registry.add(new TypeScriptAliasGenerator());
   const generator = new TypeScriptInterfaceGenerator(registry);
 
   it('should generate an empty interface for an empty interface model', () => {
@@ -101,5 +105,37 @@ describe('Interface code generator', () => {
     expectSource(sourceCode.toString())
       .toContainInterfaceDeclaration('Test')
       .withOptionalProperty('"application/json"');
+  });
+
+  it('should create extends clauses for aliases defined in the type', () => {
+    const interfaceModel = new TypeScriptInterface('Test');
+    interfaceModel.addExtends(
+      new TypeScriptGeneric('record', 'Record', [
+        new TypeScriptTypeAlias('string', 'string'),
+        new TypeScriptTypeAlias('any', 'any'),
+      ])
+    );
+    const sourceCode = generator.generate(interfaceModel);
+
+    expectSource(sourceCode.toString())
+      .toContainInterfaceDeclaration('Test')
+      .withExtendsClauseToEqual(0, 'Record<string, any>');
+  });
+
+  it('should support multiple extends clauses for aliases defined in the type', () => {
+    const interfaceModel = new TypeScriptInterface('Test');
+    interfaceModel.addExtends(
+      new TypeScriptGeneric('record', 'Record', [
+        new TypeScriptTypeAlias('string', 'string'),
+        new TypeScriptTypeAlias('any', 'any'),
+      ])
+    );
+    interfaceModel.addExtends(new TypeScriptTypeAlias('record', 'SomeSuperType'));
+    const sourceCode = generator.generate(interfaceModel);
+
+    expectSource(sourceCode.toString())
+      .toContainInterfaceDeclaration('Test')
+      .withExtendsClauseToEqual(0, 'Record<string, any>')
+      .withExtendsClauseToEqual(1, 'SomeSuperType');
   });
 });

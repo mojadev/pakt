@@ -10,7 +10,7 @@ export class TypeScriptInterfaceGenerator implements CodeGenerator<TypeScriptInt
   generate(interfaceModel: TypeScriptInterface, writer = new Writer()): Writer {
     writer.conditionalWrite(interfaceModel.exported, () => 'export ');
     writer.write(`interface ${interfaceModel.name} `);
-
+    this.writeExtendsClause(interfaceModel, writer);
     const fieldInterface = this.registry.entries['field:interface'];
     if (!fieldInterface) {
       writer.inlineBlock();
@@ -21,13 +21,29 @@ export class TypeScriptInterfaceGenerator implements CodeGenerator<TypeScriptInt
     writer.blankLine();
     return writer;
   }
+
+  private writeExtendsClause(interfaceModel: TypeScriptInterface, writer: Writer): void {
+    if (interfaceModel.extends.length > 0) {
+      writer.write('extends ');
+      interfaceModel.extends.forEach((type, idx) => {
+        if (idx) {
+          writer.write(', ');
+        }
+        const generator = this.registry.entries['field:' + String(getModelType(type))];
+        if (generator) {
+          generator.generate(type, writer);
+        }
+      });
+      writer.space();
+    }
+  }
 }
 
 @codeGenerator('objectType')
 export class TypeScriptObjectTypeDefinitionGenerator implements CodeGenerator<TypeScriptObjectTypeLiteral> {
   constructor(private readonly registry: Registry) {}
 
-  generate(interfaceModel: TypeScriptInterface, writer = new Writer()): Writer {
+  generate(interfaceModel: TypeScriptObjectTypeLiteral, writer = new Writer()): Writer {
     writer.conditionalWrite(interfaceModel.exported, () => 'export ');
     writer.write(`type ${interfaceModel.name} = `);
 
@@ -42,6 +58,7 @@ export class TypeScriptObjectTypeDefinitionGenerator implements CodeGenerator<Ty
     return writer;
   }
 }
+
 @codeGenerator('field:alias')
 export class TypeScriptAliasFieldGenerator implements CodeGenerator<TypeScriptTypeAlias> {
   generate(model: TypeScriptTypeAlias, writer: Writer): Writer {

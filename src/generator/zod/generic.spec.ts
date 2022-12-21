@@ -15,7 +15,7 @@ describe('Generic zod generator', () => {
   const generator = new ZodGenericGenerator(registry);
 
   it('should create an array for Array<T> types', () => {
-    const arrayGeneric = new TypeScriptGeneric('ArrayType', 'Array', new TypeScriptTypeAlias('type', 'string'));
+    const arrayGeneric = new TypeScriptGeneric('ArrayType', 'Array', [new TypeScriptTypeAlias('type', 'string')]);
 
     const result = generator.generate(arrayGeneric, new Writer()).toString();
 
@@ -23,10 +23,13 @@ describe('Generic zod generator', () => {
   });
 
   it('should create a record for Record<T> types', () => {
-    const recordGeneric = new TypeScriptGeneric('RecordType', 'Record', new TypeScriptTypeAlias('type', 'string'));
+    const recordGeneric = new TypeScriptGeneric('RecordType', 'Record', [
+      new TypeScriptTypeAlias('key', 'string'),
+      new TypeScriptTypeAlias('type', 'string'),
+    ]);
 
     const result = generator.generate(recordGeneric, new Writer()).toString();
 
-    expect(result).toEqual('z.record(z.string())');
+    expect(result).toEqual('z.record(z.string(), z.string())');
   });
 });
