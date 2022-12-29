@@ -7,22 +7,29 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
+      - name: Get number of CPU cores
+        id: cpu-cores
+        uses: SimenB/github-actions-cpu-cores@v1
 
       - id: release
         uses: google-github-actions/release-please-action@v3
         with:
           release-type: node
           package-name: pakt-koa 
+
       - uses: actions/checkout@v2
         if: ${{ steps.release.outputs.release_created }}
+
       - uses: actions/setup-node@v1
         with:
           node-version: 16
           registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.release_created }}
+
       - run: yarn install
         if: ${{ steps.release.outputs.release_created }}
-      - run: yarn ci
+
+      - run: yarn ci --max-workers ${{ steps.cpu-cores.outputs.count }}
         if: ${{ steps.release.outputs.release_created }}
 #     Publishing will take a bit
 #      - run: yarn publish
