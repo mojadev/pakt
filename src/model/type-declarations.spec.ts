@@ -1,4 +1,5 @@
 import { OpenAPIV3_1 } from 'openapi-types';
+import { TypeScriptLiteral } from './generated-code-model';
 import { parseType } from './type-declarations';
 
 describe('Type Declarations', () => {
@@ -88,8 +89,13 @@ describe('Type Declarations', () => {
     expect(result.properties?.id.children).toEqual([{ type: 'number' }]);
   });
 
-  it.skip('should support enum definitions for strings', () => {
-    // TODO: Implement
+  it('should support enum definitions for strings', () => {
+    const result = parseType({
+      type: 'string',
+      enum: ['a', 'b', 'c'],
+    });
+
+    expect(result.enum).toEqual(['a', 'b', 'c']);
   });
 
   it('should define reference types using their source', () => {

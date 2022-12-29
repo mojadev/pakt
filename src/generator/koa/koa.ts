@@ -13,6 +13,7 @@ import { DataTypeGenerator } from './data-types';
 import { KoaRouterGenerator } from './koa-router';
 import { OperationTypeGenerator } from './operations';
 import { SchemaFileGenerator } from './schema';
+import { ZodLiteralGenerator } from 'generator/zod/literal';
 
 export class KoaRecipe {
   api: TypeScriptModule[] = [];
@@ -20,7 +21,7 @@ export class KoaRecipe {
   typescriptGenerator = new Registry();
   validatorGenerator = new Registry();
 
-  constructor (private readonly model: RoutingModel) {
+  constructor(private readonly model: RoutingModel) {
     addBaseTypeScriptGenerators(this.typescriptGenerator);
     this.typescriptGenerator.add(new DataTypeGenerator());
     this.typescriptGenerator.add(new OperationTypeGenerator(this.typescriptGenerator));
@@ -30,10 +31,11 @@ export class KoaRecipe {
     this.validatorGenerator.add(new ZodCompositeGenerator(this.validatorGenerator));
     this.validatorGenerator.add(new ZodInterfaceGenerator(this.validatorGenerator));
     this.validatorGenerator.add(new ZodGenericGenerator(this.validatorGenerator));
+    this.validatorGenerator.add(new ZodLiteralGenerator());
     this.validatorGenerator.add(new ZodRouterModelGenerator(this.validatorGenerator));
   }
 
-  generateImplementation (): Record<string, string> {
+  generateImplementation(): Record<string, string> {
     const schemaGenerator = new SchemaFileGenerator(this.typescriptGenerator);
     const schemas = schemaGenerator.generate(this.model, new Writer('components/schemas')).toString();
     const files = {

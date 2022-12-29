@@ -53,6 +53,13 @@ components:
     ArbitaryRequestBody:
       type: object
       additionalProperties: true
+      properties:
+        name: 
+          type: string
+          enum: 
+            - a 
+            - b
+            - c
     EchoResponse:
       type: object
       properties:
