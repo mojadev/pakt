@@ -1,7 +1,7 @@
 {
-  "name": "openapi-koa-generator",
-  "version": "1.0.0",
-  "description": "Generates koa backends from OpenAPI 3 documents",
+  "name": "pakt-koa",
+  "version": "0.1.0",
+  "description": "Generates koa backends from OpenAPI 3+ specs",
   "main": "dist/index.js",
   "repository": "https://github.com/mojadev/openapi-koa-generator",
   "author": "Jannis Gansen <mojadev@gmail.com>",
@@ -51,9 +51,7 @@
     "tsconfig-paths": "^4.1.1",
     "typescript": "^4.9.4",
     "typescript-eslint": "^0.0.1-alpha.0",
-    "yaml": "^1.10.2"
-  },
-  "dependencies": {
+    "yaml": "^1.10.2",
     "zod": "^3.17.3"
   },
   "ts-node": {
