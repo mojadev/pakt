@@ -45,11 +45,25 @@ describe('Echo server e2e test', () => {
   it('should return the request body on POST requests', async () => {
     const url = getUrl('/echo/test');
 
-    const result = await axios.post(url.toString(), { id: '12345' });
+    const result = await axios.post(url.toString(), { id: '12345', name: 'a' });
 
     expect(result.data).toEqual({
       path: [{ key: 'path', value: 'test' }],
-      body: { id: '12345' },
+      body: { id: '12345', name: 'a' },
     });
+  });
+
+  it('should return a 500 (TODO: 400) on invalid enum values', async () => {
+    const url = getUrl('/echo/test');
+
+    try {
+      const result = await axios.post(url.toString(), { id: '12345', name: 'invalid' });
+      expect(result.status).toEqual(400);
+    } catch (e) {
+      expect(axios.isAxiosError(e)).toBeTruthy();
+      if (axios.isAxiosError(e)) {
+        expect(e.status).toEqual(undefined);
+      }
+    }
   });
 });

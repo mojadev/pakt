@@ -9,6 +9,7 @@ import {
   TypeScriptInterfaceGenerator,
   TypeScriptObjectTypeDefinitionGenerator,
 } from './interface';
+import { TypeScriptLiteralFieldGenerator, TypeScriptLiteralGenerator } from './literal';
 
 export const addBaseTypeScriptGenerators = (registry: Registry): void => {
   registry.add(new TypeScriptGenericGenerator(registry));
@@ -19,6 +20,8 @@ export const addBaseTypeScriptGenerators = (registry: Registry): void => {
   registry.add(new TypeScriptInterfaceGenerator(registry));
   registry.add(new TypeScriptAliasFieldGenerator());
   registry.add(new TypeScriptAliasGenerator());
+  registry.add(new TypeScriptLiteralFieldGenerator());
+  registry.add(new TypeScriptLiteralGenerator());
   registry.add(new TypeScriptInterfaceFieldGenerator(registry));
   registry.add(new TypeScriptObjectTypeDefinitionGenerator(registry));
 };

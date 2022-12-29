@@ -23,7 +23,7 @@ describe('Koa recipe', () => {
       petId: 'number',
       quantity: 'number',
       shipDate: 'Date',
-      status: 'string',
+      status: '"placed" | "approved" | "delivered"',
       complete: 'boolean',
     });
     expectSource(fileMap['components/schemas.ts']).toContainInterfaceDeclaration('Category');

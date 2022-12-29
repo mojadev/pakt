@@ -147,12 +147,9 @@ export class TypeScriptGeneric {
   }
 }
 
-/**
- * Todo: Implement generics properly
- */
-@codeModel('generic')
-export class TypeScriptGenericV2 {
-  constructor(public readonly name: string, public baseType = TypeScriptTypeAlias, public readonly exported = true) {}
+@codeModel('literal')
+export class TypeScriptLiteral {
+  constructor(public readonly name: string, public readonly value: string, public readonly exported = true) {}
 }
 
 export type TypeScriptDataStructure =
@@ -160,6 +157,7 @@ export type TypeScriptDataStructure =
   | TypeScriptInterface
   | TypeScriptTypeComposition
   | TypeScriptObjectTypeLiteral
+  | TypeScriptLiteral
   | TypeScriptGeneric;
 
 export type TypeScriptInterfaceDefinition = Record<

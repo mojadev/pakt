@@ -17,7 +17,7 @@ describe('Composite zod generator', () => {
 
     const result = generator.generate(type, new Writer()).toString();
 
-    expect(result).toEqual('z.union(z.string(), zStringAsNumber)');
+    expect(result).toEqual('z.union([z.string(), zStringAsNumber])');
   });
 
   it('should write a single type in case the union contains only one child', () => {

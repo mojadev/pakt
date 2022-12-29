@@ -36,6 +36,7 @@ export interface TypeModel {
     | 'any';
   ref?: string;
   pattern?: string;
+  enum?: string[];
   min?: number;
   max?: number;
   requiredFields?: string[];

@@ -13,6 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - name: Get number of CPU cores
+        id: cpu-cores
+        uses: SimenB/github-actions-cpu-cores@v1
+
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
@@ -23,5 +27,5 @@ jobs:
       - run: yarn lint
         name: Lint
 
-      - run: yarn ci
-        name: Test
+      - run: yarn ci --max-workers ${{ steps.cpu-cores.outputs.count }}
+        name: Test 
