@@ -31,10 +31,11 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
     writer.writeLine('/* eslint-disable @typescript-eslint/dot-notation */');
     this.registry.generateCode(new EcmaScriptImport('api-types').setNamespaceImport('_ApiTypes'), writer);
     this.registry.generateCode(new EcmaScriptImport('koa-router', true).setDefaultImport('Router'), writer);
+    this.registry.generateCode(new EcmaScriptImport('koa-bodyparser', true).setDefaultImport('bodyParser'), writer);
     this.registry.generateCode(this.createSchemaImport(model), writer);
     writer.blankLine();
 
-    const interfaceDefinition = this.generateReturnTypeInterface(model);
+    const interfaceDefinition = this.generateOperationPayloadInterface(model);
     identifyImports(interfaceDefinition).forEach((definition) => {
       this.registry.generateCode(definition, writer);
     });
@@ -44,7 +45,7 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
     return writer;
   }
 
-  private generateReturnTypeInterface(model: RouterDefinition): TypeScriptObjectTypeLiteral {
+  private generateOperationPayloadInterface(model: RouterDefinition): TypeScriptObjectTypeLiteral {
     const returnTypeInterface = new TypeScriptInterface('ApiDefinition');
     if (!model.operations) {
       return returnTypeInterface;
@@ -65,12 +66,24 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
               ])
             )
             .addChildIf(() => implementation.params.length > 0, this.generateParamsInterface(implementation))
-            .addChildIf(() => implementation.queryParams.length > 0, this.generateQueryParamsInterface(implementation)),
+            .addChildIf(() => implementation.queryParams.length > 0, this.generateQueryParamsInterface(implementation))
+            .addChildIf(
+              () => implementation.requestBody !== undefined && implementation.requestBody.length > 0,
+              this.generateRequestBodyInterface(implementation)
+            ),
           true
         );
       });
     });
     return returnTypeInterface;
+  }
+  generateRequestBodyInterface(implementation: RouterOperationImplementation): TypeScriptDataStructure {
+    const interfaceDefinition = new TypeScriptTypeComposition('body', 'union', true);
+    (implementation.requestBody ?? []).forEach((body) => {
+      interfaceDefinition.addChild(body.payload);
+    });
+
+    return new TypeScriptGeneric('string', '_ApiTypes.Body', [interfaceDefinition]);
   }
 
   private generateParamsInterface(implementation: RouterOperationImplementation): TypeScriptDataStructure {
@@ -110,9 +123,13 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
     const queryImports = getImportSymbols(({ implementation }) => implementation.queryParams.length > 0).map((x) =>
       createQueryParamSchemaName({ name: x })
     );
+    const bodyParamImport = getImportSymbols(({ implementation }) => (implementation.requestBody ?? []).length > 0).map(
+      (x) => createBodyPayloadSchemaName({ name: x })
+    );
 
     ecmaImport.addNamedImports(paramImports);
     ecmaImport.addNamedImports(queryImports);
+    ecmaImport.addNamedImports(bodyParamImport);
 
     return ecmaImport;
   }
@@ -132,7 +149,7 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
             .inlineBlock(() => {
               operation.implementations.forEach((impl) => {
                 const params = `_ApiTypes.ApiPayload<ApiDefinition["${operation.name}"]["${impl.mimeType}"]>`;
-                const response = `_ApiTypes.ApiResponse<ApiDefinition["${operation.name}"]["${impl.mimeType}"]>`;
+                const response = `Promise<_ApiTypes.ApiResponse<ApiDefinition["${operation.name}"]["${impl.mimeType}"]>>`;
                 writer
                   .quote(impl.mimeType)
                   .write(': (params: ')
@@ -163,13 +180,15 @@ export class KoaRouterGenerator implements CodeGenerator<RouterDefinition> {
     }
     writer.writeLine('export const registry = createRegistry();');
     writer.writeLine('export const router = new Router();');
+
     model.operations.forEach((operation) => {
       writer
         .write('router.')
         .write(operation.method)
         .write('(')
         .quote(operation.path.replace(/\{(.*)\}/g, ':$1'))
-        .write(', (ctx, next) => ')
+        .conditionalWrite(hasRequestBody(operation), ', ' + getBodyParser(operation))
+        .write(', async (ctx, next) => ')
         .inlineBlock(() => writer.write(apiCallSnippet(operation)))
         .write(');')
         .blankLine();
@@ -193,7 +212,7 @@ const registerOperationSnippet = `
       mimeType: MimeType,
       request: (
         args: _ApiTypes.ApiPayload<ApiDefinition[Operation][MimeType]>
-      ) => _ApiTypes.ApiResponse<ApiDefinition[Operation][MimeType]>
+      ) => Promise<_ApiTypes.ApiResponse<ApiDefinition[Operation][MimeType]>> | _ApiTypes.ApiResponse<ApiDefinition[Operation][MimeType]>
     ) {
       registry[operation] = registry[operation] ?? {};
       registry[operation][mimeType] = request as unknown as typeof registry[Operation][MimeType];
@@ -209,9 +228,13 @@ const generatePayload = (routerOperation: RouterOperation): string => {
 
   const pathImport = `const pathParams = ${createPathParamSchemaName(routerOperation)}.parse(ctx.params);\n`;
   const queryParamImport = `const queryParams = ${createQueryParamSchemaName(routerOperation)}.parse(ctx.query);\n`;
+  const bodyParamImport = `const bodyPayload = ${createBodyPayloadSchemaName(
+    routerOperation
+  )}.parse(ctx.request.body);\n`;
+
   routerOperation.implementations.forEach((implementation) => {
     let caseEntry = `     case "${implementation.mimeType}":\n`;
-    caseEntry += `        result = registry.get()["${routerOperation.name}"]["${
+    caseEntry += `        result = await registry.get()["${routerOperation.name}"]["${
       implementation.mimeType
     }"](${generateApiPayload(implementation)});`;
     cases.push(caseEntry);
@@ -219,6 +242,7 @@ const generatePayload = (routerOperation: RouterOperation): string => {
   return `
   ${routerOperation.implementations.some((x) => x.params.length > 0) ? pathImport : ''}
   ${routerOperation.implementations.some((x) => x.queryParams.length > 0) ? queryParamImport : ''}
+  ${routerOperation.implementations.some((x) => (x.requestBody ?? []).length > 0) ? bodyParamImport : ''}
   let result: {body?: unknown, headers?: Record<string, string>, status?: number} = {};
   switch(mimeType) {
 ${cases.join('\n')}
@@ -227,6 +251,7 @@ ${cases.join('\n')}
   ctx.body = result.body;
   ctx.set(result.headers ?? {});
   ctx.status = result.status ?? 404;
+  next();
   `;
 };
 
@@ -237,6 +262,9 @@ const generateApiPayload = (implementation: RouterOperationImplementation): stri
   }
   if (implementation.queryParams.length > 0) {
     fields.push('query: queryParams');
+  }
+  if ((implementation.requestBody ?? []).length) {
+    fields.push('body: bodyPayload');
   }
   return `{
     ${fields.join(',\n')}
@@ -263,4 +291,27 @@ const createPathParamSchemaName = ({ name }: { name: string }): string => {
 
 const createQueryParamSchemaName = ({ name }: { name: string }): string => {
   return pascalCase(name + '-' + 'QueryParameterSchema');
+};
+
+const createBodyPayloadSchemaName = ({ name }: { name: string }): string => {
+  return pascalCase(name + '-' + 'BodyPayloadSchema');
+};
+
+const hasRequestBody = (operation: RouterOperation): boolean => {
+  const implementation = operation.implementations[0];
+  if (!implementation) {
+    return false;
+  }
+  return implementation.requestBody !== undefined && implementation.requestBody.length > 0;
+};
+
+const getBodyParser = (operation: RouterOperation): string => {
+  const mimeTypes = operation.implementations[0].requestBody?.map((x) => x.mimeType) || [];
+  const types = ['text', 'xml', 'form', 'json'].filter((x) =>
+    mimeTypes.some((mimeType) => mimeType.includes(x) || x.includes('*'))
+  );
+  if (types.length === 0) {
+    return 'bodyParser()';
+  }
+  return `bodyParser({enableTypes: ['${types.join(',')}']})`;
 };

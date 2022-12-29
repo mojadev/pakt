@@ -1,6 +1,11 @@
 import { pascalCase } from 'change-case';
 import { RoutingModel } from '../../model';
-import { EcmaScriptImport, TypeScriptInterface } from '../../model/generated-code-model';
+import {
+  EcmaScriptImport,
+  TypeScriptDataStructure,
+  TypeScriptInterface,
+  TypeScriptTypeComposition,
+} from '../../model/generated-code-model';
 import { CodeGenerator, Registry } from '../code-generator';
 import { codeGenerator } from '../code-generator.decorator';
 import { generateCodeModelForType } from '../typescript/mapper';
@@ -21,10 +26,10 @@ export class ZodRouterModelGenerator implements CodeGenerator<RoutingModel> {
   generate(model: RoutingModel, writer: Writer): Writer {
     this.registry.generateCode(this.importZodSymbol, writer);
     writer.blankLine();
+    this.generateExplicitTypeSchemas(model, writer);
     this.customZodFunctions.forEach((zodFunction) => zodFunction.generate(model, writer));
 
     this.generatePathParamSchemas(model, writer);
-    this.generateExplicitTypeSchemas(model, writer);
 
     return writer;
   }
@@ -33,6 +38,7 @@ export class ZodRouterModelGenerator implements CodeGenerator<RoutingModel> {
     Object.values(model.routerPaths).forEach((routerPath) => {
       const pathParams = new TypeScriptInterface('pathParams');
       const queryParams = new TypeScriptInterface('queryParams');
+      const bodyPayload = new TypeScriptTypeComposition('requestBody', 'union');
       routerPath.pathParams?.forEach((pathParam) => {
         pathParams.addField(
           pathParam.name,
@@ -48,12 +54,18 @@ export class ZodRouterModelGenerator implements CodeGenerator<RoutingModel> {
         );
       });
 
+      Object.entries(routerPath.requestBodies ?? {}).forEach(([key, body]) => {
+        bodyPayload.addChild(generateCodeModelForType(key, body));
+      });
       this.writeRequestPartSchema(writer, pascalCase(routerPath.operation + '-PathParameterSchema'), pathParams);
       this.writeRequestPartSchema(writer, pascalCase(routerPath.operation + '-QueryParameterSchema'), queryParams);
+      if (bodyPayload.children.length) {
+        this.writeRequestPartSchema(writer, pascalCase(routerPath.operation + '-BodyPayloadSchema'), bodyPayload);
+      }
     });
   }
 
-  private writeRequestPartSchema(writer: Writer, name: string, queryParams: TypeScriptInterface): void {
+  private writeRequestPartSchema(writer: Writer, name: string, queryParams: TypeScriptDataStructure): void {
     writer.write('export const ').write(name).write(' = ');
     this.registry.generateCode(queryParams, writer);
     writer.write(';').blankLine();

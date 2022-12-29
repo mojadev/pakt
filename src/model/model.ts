@@ -1,11 +1,9 @@
 import fs from 'fs';
 import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
 import YAML from 'yaml';
-import { iterateObject } from '../iterate-object';
 import { parseResponses } from './response';
 import { parseType } from './type-declarations';
-import { Filename, MethodName, OperationList, PathName, RequestParam, RoutingModel } from './types';
-
+import { Filename, MethodName, OperationList, PathName, RequestBodies, RequestParam, RoutingModel } from './types';
 const supportedMethods: OpenAPIV3_1.HttpMethods[] = Object.values(OpenAPIV3.HttpMethods);
 
 /**
@@ -23,6 +21,16 @@ export const importModel = (filename: Filename): RoutingModel => {
   return transformModel(document);
 };
 
+/**
+ * Transform the OpenAPI definition to a RoutingModel.
+ *
+ * The RoutingModel is the data structure that is internally used.
+ * This allow us to decouple the interface of router generators from the OpenAPI
+ * standard.
+ *
+ * @param document
+ * @returns
+ */
 export const transformModel = (document: OpenAPIV3_1.Document): RoutingModel => {
   const allPaths = document.paths ?? {};
   const result: RoutingModel = {
@@ -30,7 +38,7 @@ export const transformModel = (document: OpenAPIV3_1.Document): RoutingModel => 
     types: {},
   };
 
-  iterateObject(document.components?.schemas ?? {}).forEach(([typeName, schema]) => {
+  Object.entries(document.components?.schemas ?? {}).forEach(([typeName, schema]) => {
     result.types[typeName] = parseType(schema, schema.description);
   });
 
@@ -47,15 +55,15 @@ export const transformModel = (document: OpenAPIV3_1.Document): RoutingModel => 
 
     methods.forEach(({ method, path, definition }) => {
       result.routerPaths.push({
+        path,
         method,
         tags: definition.tags,
         documentation: createDocumentation(definition),
         operation: definition.operationId ?? createOperation(method, path),
         pathParams: parseParams(definition, 'path'),
         queryParams: parseParams(definition, 'query'),
-
-        path,
         responses: parseResponses(document, definition.responses ?? {}),
+        requestBodies: parseRequestBody(document, definition.requestBody),
       });
     });
   });
@@ -85,6 +93,39 @@ const parseParams = (definition: OpenAPIV3_1.OperationObject, filter: 'path' | '
           },
         } as RequestParam)
     ) ?? []
+  );
+};
+
+const parseRequestBody = (
+  document: OpenAPIV3_1.Document,
+  requestBody: OpenAPIV3_1.RequestBodyObject | OpenAPIV3.ReferenceObject | undefined
+): RequestBodies => {
+  if (!requestBody) {
+    return {};
+  }
+  if ('$ref' in requestBody) {
+    const allRequestBodies = document.components?.requestBodies;
+    const refAddress = requestBody.$ref.split('/').slice(0, -1).join('/');
+    const [result] = requestBody.$ref.split('/').reverse();
+    const supportedPath = '#/components/requestBodies';
+    if (refAddress.toLocaleLowerCase() !== supportedPath.toLocaleLowerCase()) {
+      console.warn(
+        `Cannot use requestBody ${requestBody.$ref} as it is not addressing a type under ${supportedPath} (${refAddress})`
+      );
+      return {};
+    }
+    if (allRequestBodies && allRequestBodies[result]) {
+      return parseRequestBody(document, allRequestBodies[result]);
+    }
+    console.error('Could not find ', requestBody.$ref);
+    return {};
+  }
+  return Object.entries(requestBody.content).reduce(
+    (prev, [key, value]) => ({
+      ...prev,
+      [key]: parseType(value.schema || {}, requestBody.description),
+    }),
+    {}
   );
 };
 

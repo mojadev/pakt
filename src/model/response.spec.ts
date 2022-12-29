@@ -54,6 +54,7 @@ describe('parseResponse', () => {
     const response = specToResponse(spec);
     expect(response).toEqual({
       type: 'ref',
+      documentation: 'default response',
       ref: '#/components/schemas/Response',
     });
   });
@@ -71,22 +72,23 @@ describe('parseResponse', () => {
 
     expect(response).toEqual({
       type: 'ref',
+      documentation: 'default response',
       ref: '#/components/schemas/Response',
     });
   });
 });
 
-function specToResponse(spec: OpenAPIV3_1.Document<{}>): TypeModel {
+function specToResponse(spec: OpenAPIV3_1.Document<object>): TypeModel {
   const responses = parseResponses(spec, getResponse(spec));
   const response: TypeModel = responses[200]['application/json'];
   return response;
 }
 
-function getResponse(spec: OpenAPIV3_1.Document<{}>): OpenAPIV3_1.ResponsesObject {
+function getResponse(spec: OpenAPIV3_1.Document<object>): OpenAPIV3_1.ResponsesObject {
   return (spec.paths as OpenAPIV3_1.PathsObject)['/paths/{pet}']?.get?.responses as OpenAPIV3_1.ResponsesObject;
 }
 
-function newSpecWithResponse(response: OpenAPIV3.ResponsesObject): OpenAPIV3_1.Document<{}> {
+function newSpecWithResponse(response: OpenAPIV3.ResponsesObject): OpenAPIV3_1.Document<object> {
   return {
     ...specHeader,
     paths: {

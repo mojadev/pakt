@@ -1,4 +1,4 @@
-import { Parameter, RouterOperationImplementation, RouterPath, TypeScriptInterface, TypeScriptTypeAlias } from 'model';
+import { Parameter, RequestBody, RouterOperationImplementation, RouterPath, TypeScriptTypeAlias } from 'model';
 import { mapToRouterCodeModel } from './router';
 
 const baseDefinition: Readonly<RouterPath> = {
@@ -10,7 +10,7 @@ const baseDefinition: Readonly<RouterPath> = {
   },
 };
 
-describe('API Model to Router Codemodel mapper', () => {
+describe('API Model to Router Code model mapper', () => {
   it('should map a get request without params to the router code', () => {
     const path = { ...baseDefinition };
 
@@ -61,8 +61,9 @@ describe('API Model to Router Codemodel mapper', () => {
           payload: {
             definition: {},
             exported: true,
+            extends: [],
             name: 'GetPets_200ApplicationJsonResponsePayload',
-          } as TypeScriptInterface,
+          } as ForcedTypeScriptInterface,
         },
       ],
     } as RouterOperationImplementation);
@@ -102,16 +103,18 @@ describe('API Model to Router Codemodel mapper', () => {
           payload: {
             definition: {},
             exported: true,
+            extends: [],
             name: 'GetPets_200ApplicationJsonResponsePayload',
-          } as TypeScriptInterface,
+          } as ForcedTypeScriptInterface,
         },
         {
           status: 404,
           payload: {
             definition: {},
             exported: true,
+            extends: [],
             name: 'GetPets_404ApplicationJsonResponsePayload',
-          } as TypeScriptInterface,
+          } as ForcedTypeScriptInterface,
         },
       ],
     } as RouterOperationImplementation);
@@ -240,7 +243,7 @@ describe('API Model to Router Codemodel mapper', () => {
 
     const codeModel = mapToRouterCodeModel(path);
 
-    expect(codeModel.method).toEqual(method);
+    expect(codeModel.method).toEqual(result);
   });
 
   it('should set the path from the RouterPath', () => {
@@ -259,4 +262,51 @@ describe('API Model to Router Codemodel mapper', () => {
   });
 });
 
+it('should create TypeScriptDataStructures for every type in requests', () => {
+  const path = {
+    method: 'post',
+    operation: 'updatePets',
+    path: 'pet/:id',
+    requestBodies: {
+      'application/json': { type: 'object', properties: { name: { type: 'string' } } },
+      'text/plain': { type: 'string' },
+    },
+    responses: {
+      200: { '*/*': { type: 'string' } },
+    },
+  } as RouterPath;
+
+  const codeModel = toObject(mapToRouterCodeModel(path));
+  const requestBodies = codeModel.implementations[0].requestBody as RequestBody[];
+
+  expect(requestBodies).toHaveLength(2);
+  expect(requestBodies[0]).toEqual({
+    mimeType: 'application/json',
+    payload: {
+      definition: {
+        name: {
+          alias: 'string',
+          exported: true,
+          name: 'name',
+          required: false,
+        },
+      },
+      exported: true,
+      extends: [],
+      name: 'ApplicationJsonRequest',
+    },
+  });
+  expect(requestBodies[1]).toEqual({
+    mimeType: 'text/plain',
+    payload: {
+      exported: true,
+      alias: 'string',
+      name: 'TextPlainRequest',
+    },
+  });
+});
+
 const toObject = <T>(x: T): T => JSON.parse(JSON.stringify(x));
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ForcedTypeScriptInterface = any;

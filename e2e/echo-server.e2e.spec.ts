@@ -41,4 +41,15 @@ describe('Echo server e2e test', () => {
       query: [{ key: 'query', value: 'queryString' }],
     });
   });
+
+  it('should return the request body on POST requests', async () => {
+    const url = getUrl('/echo/test');
+
+    const result = await axios.post(url.toString(), { id: '12345' });
+
+    expect(result.data).toEqual({
+      path: [{ key: 'path', value: 'test' }],
+      body: { id: '12345' },
+    });
+  });
 });

@@ -1,5 +1,4 @@
-import { iterateObject } from '../../iterate-object';
-import { EcmaScriptImport, TypeScriptInterface } from '../../model/generated-code-model';
+import { EcmaScriptImport, TypeScriptGeneric, TypeScriptInterface } from '../../model/generated-code-model';
 import { CodeGenerator, Registry } from '../code-generator';
 import { codeGenerator } from '../code-generator.decorator';
 import { Writer } from '../writer';
@@ -16,8 +15,12 @@ export class ZodInterfaceGenerator implements CodeGenerator<TypeScriptInterface>
       .write(this.zodImport.defaultImport ?? 'z')
       .write('.object(')
       .inlineBlock(() => {
-        iterateObject(model.definition).forEach(([key, value]) => {
-          writer.write(String(key)).write(': ');
+        Object.entries(model.definition).forEach(([key, value]) => {
+          if (/^[A-Z]+$/gi.test(key)) {
+            writer.write(String(key)).write(': ');
+          } else {
+            writer.quote(String(key)).write(': ');
+          }
           this.registry.generateCode(value, writer);
           writer.conditionalWrite(!value.required, '.optional()');
           writer.write(',');
@@ -26,6 +29,10 @@ export class ZodInterfaceGenerator implements CodeGenerator<TypeScriptInterface>
       })
       .write(')');
 
+    // Records are modelled as passthrough for now.
+    if (model.extends.filter(TypeScriptGeneric.isType).some((extension) => extension.genericName === 'Record')) {
+      writer.write('.passthrough()');
+    }
     return writer;
   }
 }

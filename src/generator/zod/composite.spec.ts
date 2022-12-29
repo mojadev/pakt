@@ -19,4 +19,20 @@ describe('Composite zod generator', () => {
 
     expect(result).toEqual('z.union(z.string(), zStringAsNumber)');
   });
+
+  it('should write a single type in case the union contains only one child', () => {
+    const type = new TypeScriptTypeComposition('union', 'union').addChild(new TypeScriptTypeAlias('number', 'number'));
+
+    const result = generator.generate(type, new Writer()).toString();
+
+    expect(result).toEqual('zStringAsNumber');
+  });
+
+  it('should write a never type in case the union has no children', () => {
+    const type = new TypeScriptTypeComposition('union', 'union');
+
+    const result = generator.generate(type, new Writer()).toString();
+
+    expect(result).toEqual('z.never()');
+  });
 });

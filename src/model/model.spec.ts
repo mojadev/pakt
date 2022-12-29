@@ -118,7 +118,7 @@ describe('Model representing routing and rules', () => {
     const param = (model.routerPaths[0].pathParams ?? [])[0];
 
     expect(param.type.type).toEqual('array');
-    expect(param.type.children![0].type).toEqual('string');
+    expect(param.type.children?.[0].type).toEqual('string');
   });
 
   it('should add queryParams to the router model', () => {
@@ -229,7 +229,7 @@ describe('Model representing routing and rules', () => {
     const model = transformModel(spec);
 
     expect(model.routerPaths[0].documentation).toEqual('Get a pet.\n\nEndpoint to get a pet.');
-    expect(model.routerPaths[0].pathParams![0].documentation).toEqual(
+    expect(model.routerPaths[0].pathParams?.[0].documentation).toEqual(
       'The id of the pet to use.\n\nEvery pet has an id, this is it.'
     );
   });
@@ -278,5 +278,85 @@ describe('Model representing routing and rules', () => {
     const model = transformModel(spec);
 
     expect(model.types.Pet.type).toEqual('not');
+  });
+
+  it('should set response bodies for each mime type defined in the spec', () => {
+    const spec = {
+      ...specHeader,
+      paths: {
+        '/paths/{pet}': {
+          get: {
+            summary: 'Get a pet',
+            description: 'Endpoint to get a pet',
+            parameters: [],
+            requestBody: {
+              description: 'Test description',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    additionalProperties: true,
+                  },
+                },
+              },
+            },
+            ...defaultResponse,
+          },
+        },
+      },
+    } as OpenAPIV3_1.Document;
+
+    const model = transformModel(spec);
+
+    expect(model.routerPaths[0].requestBodies).toEqual({
+      'application/json': {
+        additionalProperties: true,
+        documentation: 'Test description',
+        properties: {},
+        type: 'object',
+      },
+    });
+  });
+
+  it('should allow to use request body references from /components/requestBodies in an operation', () => {
+    const spec = {
+      ...specHeader,
+      paths: {
+        '/paths/{pet}': {
+          get: {
+            summary: 'Get a pet',
+            description: 'Endpoint to get a pet',
+            parameters: [],
+            requestBody: {
+              $ref: '#/components/requestBodies/StringRequest',
+            },
+            ...defaultResponse,
+          },
+        },
+      },
+      components: {
+        requestBodies: {
+          StringRequest: {
+            description: 'Test description',
+            content: {
+              'text/plain': {
+                schema: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    } as OpenAPIV3_1.Document;
+
+    const model = transformModel(spec);
+
+    expect(model.routerPaths[0].requestBodies).toEqual({
+      'text/plain': {
+        documentation: 'Test description',
+        type: 'string',
+      },
+    });
   });
 });

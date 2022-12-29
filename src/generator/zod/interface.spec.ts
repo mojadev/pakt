@@ -1,4 +1,4 @@
-import { TypeScriptInterface, TypeScriptTypeAlias } from '../../model/generated-code-model';
+import { TypeScriptGeneric, TypeScriptInterface, TypeScriptTypeAlias } from '../../model/generated-code-model';
 import { Registry } from '../code-generator';
 import { Writer } from '../writer';
 import { ZodAliasGenerator } from './alias';
@@ -70,5 +70,20 @@ describe('Zod Interface generator', () => {
     createdAt: z.date(),
   }),
 })`);
+  });
+
+  it('should add passthrough when extending with a record', () => {
+    const interfaceDefinition = new TypeScriptInterface('test')
+      .addField('name', new TypeScriptTypeAlias('name', 'string'), true)
+      .addExtends(
+        new TypeScriptGeneric('record', 'Record', [
+          new TypeScriptTypeAlias('string', 'string'),
+          new TypeScriptTypeAlias('string', 'string'),
+        ])
+      );
+
+    const result = generator.generate(interfaceDefinition, new Writer()).toString();
+
+    expect(result).toMatch(/\.passthrough()/);
   });
 });

@@ -1,6 +1,5 @@
 import { generateCodeModelForType } from '.';
-import { iterateObject } from '../../../iterate-object';
-import { TypeScriptInterface } from '../../../model/generated-code-model';
+import { TypeScriptGeneric, TypeScriptInterface, TypeScriptTypeAlias } from '../../../model/generated-code-model';
 import { TypeHandlerCandidate } from './type';
 
 /**
@@ -16,11 +15,20 @@ export const objectTypeParser: TypeHandlerCandidate = (name, typeDefinition) => 
   }
 
   const result = new TypeScriptInterface(name);
+  if (typeDefinition.additionalProperties) {
+    result.addExtends(
+      new TypeScriptGeneric('additionalProperties', 'Record', [
+        new TypeScriptTypeAlias('key', 'string'),
+        new TypeScriptTypeAlias('value', 'any'),
+      ])
+    );
+  }
+
   if (typeDefinition.properties == null) {
     return result;
   }
 
-  iterateObject(typeDefinition.properties).forEach(([key, type]) =>
+  Object.entries(typeDefinition.properties).forEach(([key, type]) =>
     result.addField(key, generateCodeModelForType(key, type), type.required ?? false)
   );
   return result;

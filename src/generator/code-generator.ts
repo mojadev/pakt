@@ -1,16 +1,19 @@
 import { getModelType } from '../model/code-model.decorator';
 import { Writer } from './writer';
 
-export type CodeGeneratorRegistry = Record<ModuleType, CodeGenerator<any>>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TargetType = any;
+
+export type CodeGeneratorRegistry = Record<ModuleType, CodeGenerator<TargetType>>;
 
 export class Registry {
   entries: CodeGeneratorRegistry = {};
 
-  public add(generator: CodeGenerator<any>): void {
+  public add(generator: CodeGenerator<TargetType>): void {
     this.entries[getModelType(generator) ?? ''] = generator;
   }
 
-  public forModel(model: object): CodeGenerator<any> {
+  public forModel(model: object): CodeGenerator<TargetType> {
     const modelType = getModelType(model);
     if (!modelType || !this.entries[modelType]) {
       return {

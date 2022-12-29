@@ -63,6 +63,12 @@ router.addOperation(
     })
 );
 
+/**
+ * Todo: The code assertions need to be extended and/or the router must be split up in smaller parts
+ * to properly test this.
+ *
+ * Most of the router is tested in the e2e test right now.
+ */
 describe('Koa router generator', () => {
   const registry = new Registry();
   registry.add(new EcmaScriptImportGenerator());
@@ -107,7 +113,7 @@ describe('Koa router generator', () => {
     expectSource(source).toContainImport('./components/parse-schemas').withNamedImport('GetPetsQueryParameterSchema');
   });
 
-  it('should tranform path parameters to a :param syntax', () => {
+  it('should transform path parameters to a :param syntax', () => {
     const source = generator.generate(router, new Writer()).toString();
 
     expect(source).toContain('/pets/:petId');

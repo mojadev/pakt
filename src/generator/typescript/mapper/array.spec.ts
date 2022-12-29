@@ -43,11 +43,14 @@ describe('array type handler', () => {
       exported: true,
       genericName: 'Array',
       name: 'test',
-      templateType: {
-        name: 'nameGenericValue',
-        exported: true,
-        definition: { name: { exported: true, name: 'name', required: false, alias: 'string' } },
-      },
+      templateType: [
+        {
+          name: 'nameGenericValue',
+          exported: true,
+          extends: [],
+          definition: { name: { exported: true, name: 'name', required: false, alias: 'string' } },
+        },
+      ],
     });
   });
 });

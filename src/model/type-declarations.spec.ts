@@ -52,7 +52,7 @@ describe('Type Declarations', () => {
       },
     } as OpenAPIV3_1.SchemaObject);
 
-    expect(result.children![0].type).toEqual(expected);
+    expect(result.children?.[0].type).toEqual(expected);
   });
 
   it('should support objects with explicit property declarations', () => {
@@ -68,8 +68,8 @@ describe('Type Declarations', () => {
       },
     } as OpenAPIV3_1.SchemaObject);
 
-    expect(result.properties!.id.type).toEqual('number');
-    expect(result.properties!.name.type).toEqual('string');
+    expect(result.properties?.id.type).toEqual('number');
+    expect(result.properties?.name.type).toEqual('string');
   });
 
   it("should handle 'not' definitions as own types", () => {
@@ -84,8 +84,8 @@ describe('Type Declarations', () => {
       },
     } as OpenAPIV3_1.SchemaObject);
 
-    expect(result.properties!.id.type).toEqual('not');
-    expect(result.properties!.id.children).toEqual([{ type: 'number' }]);
+    expect(result.properties?.id.type).toEqual('not');
+    expect(result.properties?.id.children).toEqual([{ type: 'number' }]);
   });
 
   it.skip('should support enum definitions for strings', () => {
@@ -102,8 +102,8 @@ describe('Type Declarations', () => {
       },
     } as OpenAPIV3_1.SchemaObject);
 
-    expect(result.properties!.id.type).toEqual('ref');
-    expect(result.properties!.id.ref).toEqual('#/components/schema/Test');
+    expect(result.properties?.id.type).toEqual('ref');
+    expect(result.properties?.id.ref).toEqual('#/components/schema/Test');
   });
 
   it('should set the required flag of fields in an object', () => {
@@ -118,5 +118,20 @@ describe('Type Declarations', () => {
     } as OpenAPIV3_1.SchemaObject);
 
     expect(result.properties?.required.required).toBe(true);
+  });
+
+  it('should support additionalProperties as booleans', () => {
+    const result = parseType({
+      type: 'object',
+      required: ['required'],
+      additionalProperties: true,
+      properties: {
+        required: {
+          type: 'string',
+        },
+      },
+    } as OpenAPIV3_1.SchemaObject);
+
+    expect(result.additionalProperties).toBe(true);
   });
 });

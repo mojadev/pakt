@@ -1,8 +1,12 @@
 import Koa from 'koa';
 import { registry, router } from './router';
+import cors from '@koa/cors';
 
 const port = process.argv[2] ?? 8081;
 const app = new Koa();
+
+app.use(cors());
+
 app.use(router.routes());
 
 registry.register('echoRequest', 'application/json', (args) => {
@@ -15,7 +19,7 @@ registry.register('echoRequest', 'application/json', (args) => {
   };
 });
 
-registry.register('echoPostRequest', 'application/json', (args) => {
+registry.register('echoPostRequest', 'application/json', async (args) => {
   return {
     body: {
       path: [{ key: 'path', value: args.path.path }],

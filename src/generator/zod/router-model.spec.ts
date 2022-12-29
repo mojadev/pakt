@@ -1,7 +1,7 @@
 import { RouterPath, RoutingModel } from 'model';
 import { Registry } from '../code-generator';
-import { expectSource } from '../verify/source-assertions';
 import { EcmaScriptImportGenerator } from '../typescript';
+import { expectSource } from '../verify/source-assertions';
 import { Writer } from '../writer';
 import { ZodAliasGenerator } from './alias';
 import { ZodCompositeGenerator } from './composite';
@@ -136,5 +136,53 @@ describe('Router model zod generator', () => {
     expect(source).toContain('queryString: z.string()');
     expect(source).toContain('from: z.date()');
     expect(source).toContain('to: z.date()');
+  });
+
+  it('should generate payload types for every requestBody', () => {
+    const routerModel: RoutingModel = {
+      routerPaths: [
+        {
+          ...basicBody,
+          requestBodies: {
+            'application/json': {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+              },
+            },
+            'text/plain': {
+              type: 'string',
+            },
+          },
+        },
+      ],
+      types: {},
+    };
+
+    const source = generator.generate(routerModel, new Writer()).toString();
+
+    expect(source).toTranspile();
+    expectSource(source).toDeclareVariable(
+      'GetPetBodyPayloadSchema',
+      `GetPetBodyPayloadSchema=z.union(z.object({
+      name: z.string().optional(),
+    }),z.string())`
+    );
+  });
+
+  it('should not define a body payload if no body exists', () => {
+    const routerModel: RoutingModel = {
+      routerPaths: [
+        {
+          ...basicBody,
+        },
+      ],
+      types: {},
+    };
+
+    const source = generator.generate(routerModel, new Writer()).toString();
+
+    expect(source).toTranspile();
+    expect(source).not.toContain('GetPetBodyPayloadSchema');
   });
 });

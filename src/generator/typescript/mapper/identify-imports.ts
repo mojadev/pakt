@@ -1,4 +1,3 @@
-import { iterateObject } from '../../../iterate-object';
 import { isType } from '../../../model/code-model.decorator';
 import {
   EcmaScriptImport,
@@ -27,7 +26,7 @@ export const identifyImports = (dataStructure: TypeScriptDataStructure, isRoot =
   ) {
     imports = [
       ...imports,
-      ...iterateObject(dataStructure.definition).flatMap(([_, value]) => identifyImports(value, true)),
+      ...Object.entries(dataStructure.definition).flatMap(([, value]) => identifyImports(value, true)),
     ];
   }
 

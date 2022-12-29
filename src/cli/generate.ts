@@ -3,7 +3,6 @@ import fs from 'fs/promises';
 import path from 'path';
 import { formatSource } from 'postprocess/prettier-format';
 import { KoaRecipe } from '../generator/koa/koa';
-import { iterateObject } from '../iterate-object';
 import { importModel } from '../model';
 
 program
@@ -19,13 +18,17 @@ export async function generateApi(file: string, folder: string): Promise<void> {
   const basePath = folder;
   try {
     await fs.mkdir(basePath);
-  } catch (_) {}
+  } catch (_) {
+    // ignore mkdir error
+  }
   await Promise.all(
-    iterateObject(recipe.generateImplementation()).map(async ([key, value]) => {
+    Object.entries(recipe.generateImplementation()).map(async ([key, value]) => {
       const file = path.join(basePath, key);
       try {
         await fs.mkdir(path.dirname(file), { recursive: true });
-      } catch (_) {}
+      } catch (_) {
+        //ignore mkdir error
+      }
 
       const formatted = await formatSource(value, file);
       await fs.writeFile(file, formatted);

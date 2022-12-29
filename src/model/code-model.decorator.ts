@@ -1,7 +1,9 @@
 import { modelType } from '../generator/code-generator';
 
 export function codeModel(type: string) {
-  return function <T extends new (...args: any[]) => {}>(constructor: T) {
+  // Required for mixin classes
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function <T extends new (...args: any[]) => object>(constructor: T) {
     return class extends constructor {
       [modelType] = type;
     };
@@ -23,6 +25,6 @@ export function getModelType(codeModel: object): string | undefined {
   return codeModel[modelType];
 }
 
-export function isType<Type extends Object>(identifier: string, codeModel: object): codeModel is Type {
+export function isType<Type extends object>(identifier: string, codeModel: object): codeModel is Type {
   return getModelType(codeModel) === identifier;
 }

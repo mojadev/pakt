@@ -18,7 +18,7 @@ const linter = new Linter();
 linter.defineParser('@typescript-eslint/parser', parser as Linter.ParserModule);
 linter.defineRules(rules as unknown as Record<string, Rule.RuleModule>);
 expect.extend({
-  toTranspile: (received: string, tsOptions: tsc.CompilerOptions = { target: tsc.ScriptTarget.ESNext }) => {
+  toTranspile: (received: string) => {
     try {
       const lintResult = linter
         .verify(received, {

@@ -94,6 +94,10 @@ export class TypeScriptTypeComposition {
     this.children = [...this.children, child];
     return this;
   }
+
+  static isType(type: TypeScriptDataStructure): type is TypeScriptTypeComposition {
+    return 'conjunction' in type;
+  }
 }
 
 @codeModel('interface')
@@ -137,6 +141,10 @@ export class TypeScriptGeneric {
     public readonly templateType: TypeScriptDataStructure[],
     public readonly exported = true
   ) {}
+
+  static isType(type: TypeScriptDataStructure): type is TypeScriptGeneric {
+    return 'genericName' in type;
+  }
 }
 
 /**
@@ -213,7 +221,13 @@ export interface RouterOperationImplementation {
   mimeType: MimeType;
   params: Array<Omit<Parameter, 'required'>>;
   queryParams: Parameter[];
+  requestBody?: RequestBody[];
   responses: Response[];
+}
+
+export interface RequestBody {
+  mimeType: MimeType;
+  payload: TypeScriptDataStructure;
 }
 
 export interface Response {
@@ -231,4 +245,4 @@ export interface Parameter {
 
 type MimeType = string;
 
-export const toPlainObject = (x: unknown): any => JSON.parse(JSON.stringify(x));
+export const toPlainObject = <T>(x: T): T => JSON.parse(JSON.stringify(x));

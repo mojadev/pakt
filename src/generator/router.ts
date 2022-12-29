@@ -2,6 +2,8 @@ import { camelCase, pascalCase } from 'change-case';
 import { generateCodeModelForType } from 'generator/typescript/mapper';
 import {
   Parameter,
+  RequestBodies,
+  RequestBody,
   RequestParam,
   Response,
   ReturnCode,
@@ -27,6 +29,7 @@ export const mapToRouterCodeModel = (path: RouterPath): RouterOperation => {
       queryParams: (path.queryParams ?? []).map(mapToParameter),
       params: (path.pathParams ?? []).map(mapToParameter),
       responses: Array.from(statusCodes).map(createRespponseCodeModel(path, mimeType)),
+      requestBody: createRequestBodyArray(path.requestBodies),
     })
   );
   return operation;
@@ -75,6 +78,16 @@ function getMimeTypeStatusMap(path: RouterPath): Record<string, Set<ReturnCode>>
 function getRequestOperationTypeName(path: RouterPath, mimeType: string): string {
   const typeName = pascalCase(mimeType.replace(/\//g, '_'));
   return `Handle${pascalCase(path.operation)}${typeName}Request`;
+}
+
+function createRequestBodyArray(requestBodies: RequestBodies | undefined): RequestBody[] | undefined {
+  if (!requestBodies) {
+    return undefined;
+  }
+  return Object.entries(requestBodies).map(([mimeType, type]) => ({
+    mimeType: mimeType,
+    payload: generateCodeModelForType(pascalCase(mimeType.replace(/\*/g, 'Star') + 'Request'), type),
+  }));
 }
 
 export const createResponseTypeName = (operationId: string, mimeType: string, returnCode: ReturnCode): string => {

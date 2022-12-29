@@ -11,6 +11,14 @@ export class ZodCompositeGenerator implements CodeGenerator<TypeScriptTypeCompos
   ) {}
 
   generate(model: TypeScriptTypeComposition, writer: Writer): Writer {
+    if (model.children.length === 0) {
+      writer.write('z.never()');
+      return writer;
+    }
+    if (model.children.length === 1) {
+      this.registry.generateCode(model.children[0], writer);
+      return writer;
+    }
     writer.write(this.zodImport.defaultImport ?? 'z').write('.union(');
     model.children.forEach((child, idx) => {
       this.registry.generateCode(child, writer);

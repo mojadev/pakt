@@ -11,6 +11,12 @@ export interface RoutingModel {
   types: Record<TypePath, TypeModel>;
 }
 
+/**
+ * TypeModel are intermediate representations and can be converted to e.g. TypeScript structures later.
+ *
+ * This might be additional mapping effort, but it allows to work with internal structures which
+ * are under our control.
+ */
 export interface TypeModel {
   type:
     | 'string'
@@ -60,9 +66,11 @@ export interface RouterPath {
   headerParams?: RequestParam[];
   method: MethodName;
   responses: Responses;
+  requestBodies?: RequestBodies;
 }
 
 export type Responses = Record<ReturnCode, MimeTypeResponseMap>;
+export type RequestBodies = Record<ContentType, TypeModel>;
 export type MimeTypeResponseMap = Record<ContentType, TypeModel>;
 
 export type ContentType = string;

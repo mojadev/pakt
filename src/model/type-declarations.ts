@@ -49,9 +49,8 @@ const objectParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
     documentation: type.description,
     requiredFields: type.required,
     type: 'object',
-    additionalProperties: type.additionalProperties !== undefined,
+    additionalProperties: Boolean(type.additionalProperties),
     readOnly: type.readOnly,
-
     writeOnly: type.writeOnly,
     properties: Object.keys(properties).reduce<Record<string, TypeModel>>(
       (result, key) => ({
@@ -180,8 +179,8 @@ export const parseType = (
 ): TypeModel => {
   for (const parser of openApiParser) {
     const result = parser(type);
-    if (result != null) {
-      return result;
+    if (result) {
+      return { ...result, documentation: result.documentation ?? documentation };
     }
   }
 

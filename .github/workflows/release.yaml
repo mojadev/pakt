@@ -1,0 +1,31 @@
+on:
+  push:
+    branches:
+      - main
+name: release
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+
+      - id: release
+        uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: node
+          package-name: wsl-path
+      - uses: actions/checkout@v2
+        if: ${{ steps.release.outputs.release_created }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+          registry-url: 'https://registry.npmjs.org'
+        if: ${{ steps.release.outputs.release_created }}
+      - run: yarn install
+        if: ${{ steps.release.outputs.release_created }}
+      - run: yarn ci
+        if: ${{ steps.release.outputs.release_created }}
+#     Publishing will take a bit
+#      - run: yarn publish
+#        env:
+#          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+#        if: ${{ steps.release.outputs.release_created }}%
