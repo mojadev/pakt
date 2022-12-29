@@ -164,9 +164,9 @@ describe('Router model zod generator', () => {
     expect(source).toTranspile();
     expectSource(source).toDeclareVariable(
       'GetPetBodyPayloadSchema',
-      `GetPetBodyPayloadSchema=z.union(z.object({
+      `GetPetBodyPayloadSchema=z.union([z.object({
       name: z.string().optional(),
-    }),z.string())`
+    }),z.string()])`
     );
   });
 
