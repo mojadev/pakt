@@ -1,1 +1,1 @@
-import "./src/generator/verify";
+import './src/generator/verify';

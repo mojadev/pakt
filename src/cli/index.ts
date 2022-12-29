@@ -1,4 +1,4 @@
-import { program } from "commander";
-import "./generate";
+import { program } from 'commander';
+import './generate';
 
 program.parse();

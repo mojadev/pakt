@@ -1,82 +1,81 @@
-import { TypeModel, TypePath } from "model";
-import { string } from "zod";
-import { orderTypes } from "./order-types";
+import { TypeModel, TypePath } from 'model';
+import { orderTypes } from './order-types';
 
-describe("Order types function", () => {
-  it("should return an array of name type tuples with simple types first", () => {
+describe('Order types function', () => {
+  it('should return an array of name type tuples with simple types first', () => {
     const type: Record<TypePath, TypeModel> = {
       arrayOfSimpleString: {
-        type: "array",
-        children: [{ type: "ref", ref: "simpleString" }],
+        type: 'array',
+        children: [{ type: 'ref', ref: 'simpleString' }],
       },
       simpleObject: {
-        type: "object",
+        type: 'object',
         properties: {
           name: {
-            type: "string",
+            type: 'string',
           },
         },
       },
       referenceObject: {
-        type: "object",
+        type: 'object',
         properties: {
           reference: {
-            type: "ref",
-            ref: "simpleNumber",
+            type: 'ref',
+            ref: 'simpleNumber',
           },
         },
       },
       simpleString: {
-        type: "string",
+        type: 'string',
       },
       simpleNumber: {
-        type: "number",
+        type: 'number',
       },
     };
 
     const result = orderTypes(type).map(([key]) => key);
 
-    expect(result).toEqual(["simpleObject", "simpleString", "simpleNumber", "arrayOfSimpleString", "referenceObject"]);
+    expect(result).toEqual(['simpleObject', 'simpleString', 'simpleNumber', 'arrayOfSimpleString', 'referenceObject']);
   });
 
-  it("should return an array of types with referenced non-simple types first", () => {
+  it('should return an array of types with referenced non-simple types first', () => {
     const type: Record<TypePath, TypeModel> = {
       arrayOfObject: {
-        type: "array",
-        children: [{ type: "ref", ref: "objectType" }],
+        type: 'array',
+        children: [{ type: 'ref', ref: 'objectType' }],
       },
       objectType: {
-        type: "object",
+        type: 'object',
         properties: {
-          name: { type: "ref", ref: "stringType" },
+          name: { type: 'ref', ref: 'stringType' },
         },
       },
       stringType: {
-        type: "string",
+        type: 'string',
       },
     };
 
     const result = orderTypes(type).map(([key]) => key);
 
-    expect(result).toEqual(["stringType", "objectType", "arrayOfObject"]);
+    expect(result).toEqual(['stringType', 'objectType', 'arrayOfObject']);
   });
 
-  it("should resolve circular dependencies by creating a copied type", () => {
+  it('should resolve circular dependencies by creating a copied type', () => {
     const type: Record<TypePath, TypeModel> = {
       arrayOfObject: {
-        type: "array",
-        children: [{ type: "ref", ref: "objectType" }],
+        type: 'array',
+        children: [{ type: 'ref', ref: 'objectType' }],
       },
       objectType: {
-        type: "object",
+        type: 'object',
         properties: {
-          node: { type: "ref", ref: "arrayOfObject" },
+          node: { type: 'ref', ref: 'arrayOfObject' },
         },
       },
     };
 
     const result = orderTypes(type).map(([key]) => key);
 
-    expect(result).toEqual(["objectType", "arrayOfObject"]);
+    expect(result).toEqual(['objectType', 'arrayOfObject']);
   });
 });

@@ -1,12 +1,12 @@
-import { Folder, TypeScriptModule } from "model";
-import { mkdir } from "fs/promises";
-import { join } from "path";
+import { mkdir } from 'fs/promises';
+import { Folder, TypeScriptModule } from 'model';
+import { join } from 'path';
 
-export const generateSource = async (root: Folder, targetPath: string) => {
+export const generateSource = async (root: Folder, targetPath: string): Promise<void> => {
   await createFolderStructure(root.children, targetPath);
 };
 
-const createFolderStructure = async (nodes: Folder["children"], targetPath: string) => {
+const createFolderStructure = async (nodes: Folder['children'], targetPath: string): Promise<void> => {
   await Promise.all(
     nodes.filter(isFolder).map(async (node) => {
       const folderTarget = join(targetPath, node.name);
@@ -17,5 +17,5 @@ const createFolderStructure = async (nodes: Folder["children"], targetPath: stri
 };
 
 const isFolder = (x: Folder | TypeScriptModule): x is Folder => {
-  return "name" in x;
+  return 'name' in x;
 };

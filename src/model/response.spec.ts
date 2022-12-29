@@ -1,99 +1,101 @@
-import { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
-import { parseResponses } from "./response";
-import { TypeModel } from "./types";
+import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
+import { parseResponses } from './response';
+import { TypeModel } from './types';
 
 export const specHeader = {
-  openapi: "3.0.1",
+  openapi: '3.0.1',
   info: {
-    title: "Petstore",
-    version: "1.0.0",
+    title: 'Petstore',
+    version: '1.0.0',
   },
 };
 
-describe("parseResponse", () => {
-  it("should add all defined content types as responses", () => {
+describe('parseResponse', () => {
+  it('should add all defined content types as responses', () => {
     const spec = newSpecWithResponse({
       200: {
-        description: "default response",
+        description: 'default response',
         content: {
-          "application/json": { schema: { type: "string" } },
-          "application/xml": { schema: { type: "string" } },
+          'application/json': { schema: { type: 'string' } },
+          'application/xml': { schema: { type: 'string' } },
         },
       },
     });
     const responses = parseResponses(spec, getResponse(spec));
 
-    expect(responses[200]["application/json"]).toBeTruthy();
-    expect(responses[200]["application/xml"]).toBeTruthy();
+    expect(responses[200]['application/json']).toBeTruthy();
+    expect(responses[200]['application/xml']).toBeTruthy();
   });
 
-  it("should add inline type declaration to the response model", () => {
+  it('should add inline type declaration to the response model', () => {
     const spec = newSpecWithResponse({
       200: {
-        description: "default response",
-        content: { "application/json": { schema: { type: "string", description: "Test description" } } },
+        description: 'default response',
+        content: { 'application/json': { schema: { type: 'string', description: 'Test description' } } },
       },
     });
 
     const response = specToResponse(spec);
 
     expect(response).toEqual({
-      type: "string",
-      documentation: "Test description",
+      type: 'string',
+      documentation: 'Test description',
     });
   });
 
-  it("should resolve references as types", () => {
+  it('should resolve references as types', () => {
     const spec = newSpecWithResponse({
       200: {
-        description: "default response",
-        content: { "application/json": { schema: { $ref: "#/components/schemas/Response" } } },
+        description: 'default response',
+        content: { 'application/json': { schema: { $ref: '#/components/schemas/Response' } } },
       },
     });
 
     const response = specToResponse(spec);
     expect(response).toEqual({
-      type: "ref",
-      ref: "#/components/schemas/Response",
+      type: 'ref',
+      documentation: 'default response',
+      ref: '#/components/schemas/Response',
     });
   });
 
-  it("should allow to define default response types", () => {
+  it('should allow to define default response types', () => {
     const spec = newSpecWithResponse({
       default: {
-        description: "default response",
-        content: { "application/json": { schema: { $ref: "#/components/schemas/Response" } } },
+        description: 'default response',
+        content: { 'application/json': { schema: { $ref: '#/components/schemas/Response' } } },
       },
     });
 
     const responses = parseResponses(spec, getResponse(spec));
-    const response: TypeModel = responses.default["application/json"];
+    const response: TypeModel = responses.default['application/json'];
 
     expect(response).toEqual({
-      type: "ref",
-      ref: "#/components/schemas/Response",
+      type: 'ref',
+      documentation: 'default response',
+      ref: '#/components/schemas/Response',
     });
   });
 });
 
-function specToResponse(spec: OpenAPIV3_1.Document<{}>) {
+function specToResponse(spec: OpenAPIV3_1.Document<object>): TypeModel {
   const responses = parseResponses(spec, getResponse(spec));
-  const response: TypeModel = responses[200]["application/json"];
+  const response: TypeModel = responses[200]['application/json'];
   return response;
 }
 
-function getResponse(spec: OpenAPIV3_1.Document<{}>) {
-  return (spec.paths as OpenAPIV3_1.PathsObject)["/paths/{pet}"]?.get?.responses as OpenAPIV3_1.ResponsesObject;
+function getResponse(spec: OpenAPIV3_1.Document<object>): OpenAPIV3_1.ResponsesObject {
+  return (spec.paths as OpenAPIV3_1.PathsObject)['/paths/{pet}']?.get?.responses as OpenAPIV3_1.ResponsesObject;
 }
 
-function newSpecWithResponse(response: OpenAPIV3.ResponsesObject) {
+function newSpecWithResponse(response: OpenAPIV3.ResponsesObject): OpenAPIV3_1.Document<object> {
   return {
     ...specHeader,
     paths: {
-      "/paths/{pet}": {
+      '/paths/{pet}': {
         get: {
-          summary: "Get a pet",
-          description: "Endpoint to get a pet",
+          summary: 'Get a pet',
+          description: 'Endpoint to get a pet',
           parameters: [],
           responses: {
             ...response,

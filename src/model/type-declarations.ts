@@ -1,11 +1,10 @@
-import { OpenAPIV3_1 } from "openapi-types";
-import { TypeModel } from "./types";
+import { OpenAPIV3_1 } from 'openapi-types';
+import { TypeModel } from './types';
 
-type OpenApiTypeParser = {
-  (type: OpenAPIV3_1.ReferenceObject | OpenAPIV3_1.SchemaObject): TypeModel | undefined;
-};
+type OpenApiTypeParser = (type: OpenAPIV3_1.ReferenceObject | OpenAPIV3_1.SchemaObject) => TypeModel | undefined;
+
 const defaultType = {
-  type: "string" as const,
+  type: 'string' as const,
   additionalProperties: false,
   readOnly: false,
   writeOnly: false,
@@ -16,14 +15,14 @@ const referenceParser: OpenApiTypeParser = (type) => {
     return;
   }
   return {
-    type: "ref",
+    type: 'ref',
     ref: type.$ref,
     documentation: type.description,
   };
 };
 
 const fallbackParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
-  return { ...defaultType, type: "any", documentation: type.description };
+  return { ...defaultType, type: 'any', documentation: type.description };
 };
 
 const arrayParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
@@ -33,7 +32,7 @@ const arrayParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
   return {
     ...defaultType,
     requiredFields: type.required,
-    type: "array",
+    type: 'array',
     documentation: type.description,
     children: type.items ? [parseType(type.items, type.items.description)] : [],
     min: type.minItems,
@@ -45,16 +44,15 @@ const objectParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
   if (!isObjectType(type)) {
     return;
   }
-  const properties = type.properties || {};
+  const properties = type.properties ?? {};
   return {
     documentation: type.description,
     requiredFields: type.required,
-    type: "object",
-    additionalProperties: type.additionalProperties !== undefined,
+    type: 'object',
+    additionalProperties: Boolean(type.additionalProperties),
     readOnly: type.readOnly,
-
     writeOnly: type.writeOnly,
-    properties: Object.keys(properties).reduce(
+    properties: Object.keys(properties).reduce<Record<string, TypeModel>>(
       (result, key) => ({
         ...result,
         [key]: {
@@ -62,17 +60,17 @@ const objectParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
           required: (type.required ?? []).includes(key),
         },
       }),
-      {} as Record<string, TypeModel>
+      {}
     ),
   };
 };
 
 const numberParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
-  if (type.type !== "number") {
+  if (type.type !== 'number') {
     return;
   }
   return {
-    type: "number",
+    type: 'number',
     documentation: type.description,
     readOnly: type.readOnly,
     writeOnly: type.writeOnly,
@@ -80,11 +78,11 @@ const numberParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
 };
 
 const integerParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
-  if (type.type !== "integer") {
+  if (type.type !== 'integer') {
     return;
   }
   return {
-    type: "number",
+    type: 'number',
     documentation: type.description,
     readOnly: type.readOnly,
     writeOnly: type.writeOnly,
@@ -92,11 +90,11 @@ const integerParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
 };
 
 const stringTypeParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
-  if (type.type !== "string") {
+  if (type.type !== 'string') {
     return;
   }
   return {
-    type: "string",
+    type: 'string',
     pattern: type.pattern,
     documentation: type.description,
     readOnly: type.readOnly,
@@ -105,18 +103,18 @@ const stringTypeParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => 
 };
 
 const notParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
-  if (!type.not) {
+  if (type.not == null) {
     return;
   }
-  return { type: "not", documentation: type.description, children: [parseType(type.not, type.not.description)] };
+  return { type: 'not', documentation: type.description, children: [parseType(type.not, type.not.description)] };
 };
 
 const dateParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
-  if (type.type !== "string" || !(type.format === "date" || type.format === "date-time")) {
+  if (type.type !== 'string' || !(type.format === 'date' || type.format === 'date-time')) {
     return;
   }
   return {
-    type: "date",
+    type: 'date',
     pattern: type.pattern,
     documentation: type.description,
     readOnly: type.readOnly,
@@ -125,11 +123,11 @@ const dateParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
 };
 
 const base64Parser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
-  if (type.type !== "string" || type.format !== "byte") {
+  if (type.type !== 'string' || type.format !== 'byte') {
     return;
   }
   return {
-    type: "base64",
+    type: 'base64',
     documentation: type.description,
     readOnly: type.readOnly,
     writeOnly: type.writeOnly,
@@ -137,11 +135,11 @@ const base64Parser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
 };
 
 const booleanParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
-  if (type.type !== "boolean") {
+  if (type.type !== 'boolean') {
     return;
   }
   return {
-    type: "boolean",
+    type: 'boolean',
     documentation: type.description,
     readOnly: type.readOnly,
     writeOnly: type.writeOnly,
@@ -149,11 +147,11 @@ const booleanParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
 };
 
 const binaryParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
-  if (type.type !== "string" || type.format !== "binary") {
+  if (type.type !== 'string' || type.format !== 'binary') {
     return;
   }
   return {
-    type: "binary",
+    type: 'binary',
     documentation: type.description,
     readOnly: type.readOnly,
     writeOnly: type.writeOnly,
@@ -179,10 +177,10 @@ export const parseType = (
   type: OpenAPIV3_1.ReferenceObject | OpenAPIV3_1.SchemaObject,
   documentation?: string
 ): TypeModel => {
-  for (let parser of openApiParser) {
+  for (const parser of openApiParser) {
     const result = parser(type);
     if (result) {
-      return result;
+      return { ...result, documentation: result.documentation ?? documentation };
     }
   }
 
@@ -193,18 +191,18 @@ const isObjectType = (type: OpenAPIV3_1.SchemaObject): type is OpenAPIV3_1.Array
   if (!type) {
     return false;
   }
-  return type.type === "object";
+  return type.type === 'object';
 };
 
 const isArrayType = (type: OpenAPIV3_1.SchemaObject): type is OpenAPIV3_1.ArraySchemaObject => {
   if (!type) {
     return false;
   }
-  return type.type === "array";
+  return type.type === 'array';
 };
 
 export const isReference = (
   type: OpenAPIV3_1.ReferenceObject | OpenAPIV3_1.SchemaObject | undefined
 ): type is OpenAPIV3_1.ReferenceObject => {
-  return type !== undefined && type && "$ref" in type;
+  return type !== undefined && type && '$ref' in type;
 };
