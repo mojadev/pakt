@@ -5,19 +5,22 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "start": "ts-node ./server.ts"
+    "start": "ts-node ./server.ts",
+    "dev": "nodemon ./server.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
-    "koa-router": "^10.1.1"
+    "koa-router": "^10.1.1",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@koa/cors": "^4.0.0",
     "@types/koa-bodyparser": "^4.3.10",
     "@types/koa__cors": "^3.3.0",
+    "koa-zod-errorhandler": "^1.0.0",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
     "tsc": "^2.0.4",

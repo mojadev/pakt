@@ -89,18 +89,6 @@ const integerParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
   };
 };
 
-const literalTypeParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
-  if (type.type !== 'string' || !type.enum || !type.enum.length) {
-    return;
-  }
-  return {
-    type: 'number',
-    documentation: type.description,
-    readOnly: type.readOnly,
-    writeOnly: type.writeOnly,
-  };
-};
-
 const stringTypeParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
   if (type.type !== 'string') {
     return;

@@ -10,12 +10,17 @@ export const runServer = async (folder: string): Promise<ServerProcess> => {
   console.info(`(start) Starting at port ${port}`, folder, cwd);
   return await new Promise<ServerProcess>((resolve, reject) => {
     const process = spawn(`yarn start ${port}`, { shell: true, cwd });
-    process.stderr.addListener('error', (err) => {
-      console.error(err);
-      reject(err);
+    process.stderr.addListener('data', (data) => {
+      const msg = data.toString('utf-8');
+      console.error('(server): ', msg);
+      if (msg.includes('Command failed with exit code')) {
+        reject(msg);
+        process.kill();
+      }
     });
-    process.addListener('error', (err) => {
+    process.on('end', (err) => {
       reject(err);
+      process.kill();
     });
     process.stdout.addListener('data', (data: Buffer) => {
       const msg = data.toString('utf-8');

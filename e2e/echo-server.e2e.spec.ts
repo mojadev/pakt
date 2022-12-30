@@ -7,7 +7,7 @@ const folder = 'echo-server';
 describe('Echo server e2e test', () => {
   let server: ServerProcess;
   let baseUrl: URL;
-  beforeEach(async () => {
+  beforeAll(async () => {
     await setupProject(folder);
     await generateSource(folder);
     server = await runServer(folder);
@@ -15,7 +15,7 @@ describe('Echo server e2e test', () => {
     baseUrl.port = String(server.port);
   });
 
-  afterEach(() => {
+  afterAll(() => {
     server?.stop();
   });
 
@@ -53,7 +53,7 @@ describe('Echo server e2e test', () => {
     });
   });
 
-  it('should return a 500 (TODO: 400) on invalid enum values', async () => {
+  it('should return a 400 on invalid enum values', async () => {
     const url = getUrl('/echo/test');
 
     try {
@@ -62,7 +62,8 @@ describe('Echo server e2e test', () => {
     } catch (e) {
       expect(axios.isAxiosError(e)).toBeTruthy();
       if (axios.isAxiosError(e)) {
-        expect(e.status).toEqual(undefined);
+        expect(e.response?.status).toEqual(400);
+        expect(e.response?.data).toEqual({ detail: { name: 'Invalid input' }, error: 'Bad Request' });
       }
     }
   });
