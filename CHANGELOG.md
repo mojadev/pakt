@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.1](https://github.com/mojadev/pakt/compare/v0.1.0...v0.1.1) (2022-12-30)
+
+
+### Features
+
+* add example for koa-zod-errorhandler  (refs: 19) ([a547bf3](https://github.com/mojadev/pakt/commit/a547bf3447dfa1bcaf70166bc86b7141b277a5e8))
+
+
+### Bug Fixes
+
+* graceful shutdown of server ([a547bf3](https://github.com/mojadev/pakt/commit/a547bf3447dfa1bcaf70166bc86b7141b277a5e8))
+
+
+### Continuous Integration
+
+* enable release ([2932ab8](https://github.com/mojadev/pakt/commit/2932ab8b64ed434272acb44e1f11b2a91b2c84f0))
+
 ## 0.1.0 (2022-12-29)
 
 
