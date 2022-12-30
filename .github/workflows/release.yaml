@@ -31,8 +31,8 @@ jobs:
 
       - run: yarn ci --max-workers ${{ steps.cpu-cores.outputs.count }}
         if: ${{ steps.release.outputs.release_created }}
-#     Publishing will take a bit
-#      - run: yarn publish
-#        env:
-#          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-#        if: ${{ steps.release.outputs.release_created }}%
+     
+      - run: yarn publish
+        if: ${{ steps.release.outputs.release_created }}%
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
