@@ -59,6 +59,12 @@
     "yaml": "^1.10.2",
     "zod": "^3.17.3"
   },
+  "dependencies": {
+    "chalk": "^5.0.0",
+    "openapi-types": "^10.0.0",
+    "yaml": "^1.10.2",
+    "commander": "^8.3.0"
+  },
   "ts-node": {
     "require": [
       "tsconfig-paths/register"
