@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/mojadev/pakt/compare/v0.2.2...v0.2.3) (2022-12-31)
+
+
+### Bug Fixes
+
+* **publish:** do not test twice ([508f925](https://github.com/mojadev/pakt/commit/508f9255015b1f3cd773c1657a9d70e679275b93))
+
 ## [0.2.2](https://github.com/mojadev/pakt/compare/v0.2.1...v0.2.2) (2022-12-31)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "pakt-koa",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Generates koa backends from OpenAPI 3+ specs",
   "main": "dist/index.js",
   "repository": "https://github.com/mojadev/pakt",
