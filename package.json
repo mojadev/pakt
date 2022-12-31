@@ -3,7 +3,7 @@
   "version": "0.2.1",
   "description": "Generates koa backends from OpenAPI 3+ specs",
   "main": "dist/index.js",
-  "repository": "https://github.com/mojadev/openapi-koa-generator",
+  "repository": "https://github.com/mojadev/pakt",
   "author": "Jannis Gansen <mojadev@gmail.com>",
   "license": "MIT",
   "bin": {
@@ -13,6 +13,7 @@
     "build": "tsc --project tsconfig.build.json ",
     "test": "jest",
     "lint": "eslint ./src",
+    "prepublishOnly": "yarn build && yarn test",
     "ci": "SKIP_E2E=true jest --coverage --collectCoverageFrom='./src/**'",
     "generate-model": "NODE_PATH=./src ts-node ./src/cli generate src/__test__/basic.yaml ./test/simple-koa/generated",
     "e2e:echo-server": "ts-node src/e2e/echo-server/server.ts",
