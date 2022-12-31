@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/mojadev/pakt/compare/v0.2.1...v0.2.2) (2022-12-31)
+
+
+### Bug Fixes
+
+* **npmignore:** use proper .npmignore directives ([820c94c](https://github.com/mojadev/pakt/commit/820c94cc9236b43d2ccf96b744be97807a4fb7f3))
+
 ## [0.2.1](https://github.com/mojadev/pakt/compare/v0.2.0...v0.2.1) (2022-12-31)
 
 
