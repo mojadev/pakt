@@ -1,6 +1,6 @@
-import { expectSource } from 'generator/verify/source-assertions';
-import { Writer } from 'generator/writer';
-import { TypeScriptTypeAlias } from 'model';
+import { expectSource } from '../../verify/source-assertions';
+import { Writer } from '../../writer';
+import { TypeScriptTypeAlias } from '../../../model';
 import { TypeScriptAliasGenerator } from './alias';
 
 describe('Alias code generator', () => {

@@ -578,6 +578,11 @@ koa-router@^10.1.1:
     methods "^1.1.2"
     path-to-regexp "^6.1.0"
 
+koa-zod-errorhandler@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/koa-zod-errorhandler/-/koa-zod-errorhandler-1.0.0.tgz#13271734ca02a5c32bc3d9f0a110b28139ddb161"
+  integrity sha512-7/bdsc0SOXmJQpF3vCopipwORfN2Uw70vCrYbXh2r0vsRCw43Wrumg7+glU9S44QQNW/2CJBqRJPjDeDNxGW5g==
+
 koa@^2.13.4:
   version "2.14.1"
   resolved "https://registry.yarnpkg.com/koa/-/koa-2.14.1.tgz#defb9589297d8eb1859936e777f3feecfc26925c"
@@ -893,3 +898,8 @@ yn@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
   integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
+
+zod@^3.20.2:
+  version "3.20.2"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.20.2.tgz#068606642c8f51b3333981f91c0a8ab37dfc2807"
+  integrity sha512-1MzNQdAvO+54H+EaK5YpyEy0T+Ejo/7YLHS93G3RnYWh5gaotGHwGeN/ZO687qEDU2y4CdStQYXVHIgrUl5UVQ==

@@ -1,4 +1,4 @@
-import type { TypeModel, TypePath } from 'model';
+import type { TypeModel, TypePath } from '../../../model';
 import { getAllReferencesInModel, resolveConflicts } from './resolve-conflicts';
 
 describe('Resolve conflicts normalizer', () => {

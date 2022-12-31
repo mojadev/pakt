@@ -1,4 +1,4 @@
-import { generateApi } from 'cli/generate';
+import { generateApi } from '../../src/cli/generate';
 import path from 'path';
 
 export const generateSource = async (folder: string): Promise<void> => {

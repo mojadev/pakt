@@ -1,5 +1,5 @@
 import { mkdtemp, readdir, readFile, rm } from 'fs/promises';
-import { Folder, TypeScriptModule } from 'model';
+import { Folder, TypeScriptModule } from '../../../model';
 import { join } from 'path';
 import { generateSource } from './source-folder';
 
