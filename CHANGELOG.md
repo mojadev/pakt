@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/mojadev/pakt/compare/v0.2.3...v0.2.4) (2022-12-31)
+
+
+### Bug Fixes
+
+* **cli:** add dependencies ([7b4c9bd](https://github.com/mojadev/pakt/commit/7b4c9bdc0c11cbabb6536ef0ba10172bb8440541))
+
 ## [0.2.3](https://github.com/mojadev/pakt/compare/v0.2.2...v0.2.3) (2022-12-31)
 
 
