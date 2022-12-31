@@ -1,4 +1,4 @@
-import { TypeModel, TypePath } from 'model';
+import { TypeModel, TypePath } from '../../../model';
 
 const getReferences = (model: TypeModel): string[] => {
   if (model.ref) {
@@ -18,7 +18,7 @@ export const orderTypes = (types: Record<TypePath, TypeModel>): Array<[TypePath,
     const aReferences = getReferences(aType);
     const bReferences = getReferences(bType);
 
-    if ((aReferences.length === 0) && (bReferences.length === 0)) {
+    if (aReferences.length === 0 && bReferences.length === 0) {
       return 0;
     }
     if (bReferences.length === 0) {

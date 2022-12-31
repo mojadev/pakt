@@ -1,5 +1,5 @@
-import { Writer } from 'generator/writer';
-import { TypeScriptLiteral } from 'model';
+import { Writer } from '../writer';
+import { TypeScriptLiteral } from '../../model';
 import { ZodLiteralGenerator } from './literal';
 
 describe('Literal zod generator', () => {

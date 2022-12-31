@@ -1,4 +1,4 @@
-import { TypeModel, TypeScriptLiteral, TypeScriptTypeComposition } from 'model';
+import { TypeModel, TypeScriptLiteral, TypeScriptTypeComposition } from '../../../model';
 import { TypeHandlerCandidate } from './type';
 
 export const literalCompositionHandler: TypeHandlerCandidate = (

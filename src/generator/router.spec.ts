@@ -1,4 +1,4 @@
-import { Parameter, RequestBody, RouterOperationImplementation, RouterPath, TypeScriptTypeAlias } from 'model';
+import { Parameter, RequestBody, RouterOperationImplementation, RouterPath, TypeScriptTypeAlias } from '../model';
 import { mapToRouterCodeModel } from './router';
 
 const baseDefinition: Readonly<RouterPath> = {

@@ -1,7 +1,7 @@
-import { CodeGenerator, Registry } from 'generator/code-generator';
-import { codeGenerator } from 'generator/code-generator.decorator';
-import { Writer } from 'generator/writer';
-import { getModelType, TypeScriptGeneric } from 'model';
+import { CodeGenerator, Registry } from '../../code-generator';
+import { codeGenerator } from '../../code-generator.decorator';
+import { Writer } from '../../writer';
+import { getModelType, TypeScriptGeneric } from '../../../model';
 
 @codeGenerator('generic')
 export class TypeScriptGenericGenerator implements CodeGenerator<TypeScriptGeneric> {

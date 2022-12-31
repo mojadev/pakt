@@ -1,7 +1,7 @@
-import { CodeGenerator } from 'generator/code-generator';
-import { codeGenerator } from 'generator/code-generator.decorator';
-import { Writer } from 'generator/writer';
-import { TypeScriptTypeAlias } from 'model';
+import { CodeGenerator } from '../../code-generator';
+import { codeGenerator } from '../../code-generator.decorator';
+import { Writer } from '../../writer';
+import { TypeScriptTypeAlias } from '../../../model';
 
 @codeGenerator('alias')
 export class TypeScriptAliasGenerator implements CodeGenerator<TypeScriptTypeAlias> {

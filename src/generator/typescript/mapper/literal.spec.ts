@@ -1,4 +1,4 @@
-import { TypeScriptLiteral, TypeScriptTypeComposition } from 'model';
+import { TypeScriptLiteral, TypeScriptTypeComposition } from '../../../model';
 import { literalCompositionHandler } from './literal';
 
 describe('Literal type handler candidate', () => {
