@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/mojadev/pakt/compare/v0.2.0...v0.2.1) (2022-12-31)
+
+
+### Bug Fixes
+
+* **cli:** add missing hashbang for cli script (refs: 22) ([033a0c3](https://github.com/mojadev/pakt/commit/033a0c353a2738bbf0ff52b5763bfd3386f2e99d))
+
 ## [0.2.0](https://github.com/mojadev/pakt/compare/v0.1.1...v0.2.0) (2022-12-31)
 
 
