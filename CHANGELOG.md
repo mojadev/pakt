@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.6](https://github.com/mojadev/pakt/compare/v0.2.5...v0.2.6) (2022-12-31)
+
+
+### Bug Fixes
+
+* **koa:** fix multiple mime types not handled correctly ([4c7f08b](https://github.com/mojadev/pakt/commit/4c7f08bf09c5de6f83a91486ff6f61ac7d0e9a04))
+
 ## [0.2.5](https://github.com/mojadev/pakt/compare/v0.2.4...v0.2.5) (2022-12-31)
 
 
