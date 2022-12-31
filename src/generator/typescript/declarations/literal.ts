@@ -1,7 +1,7 @@
-import { CodeGenerator } from 'generator/code-generator';
-import { codeGenerator } from 'generator/code-generator.decorator';
-import { Writer } from 'generator/writer';
-import { TypeScriptLiteral } from 'model';
+import { CodeGenerator } from '../../code-generator';
+import { codeGenerator } from '../../code-generator.decorator';
+import { Writer } from '../../writer';
+import { TypeScriptLiteral } from '../../../model';
 
 @codeGenerator('literal')
 export class TypeScriptLiteralGenerator implements CodeGenerator<TypeScriptLiteral> {

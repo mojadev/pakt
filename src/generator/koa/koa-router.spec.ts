@@ -13,7 +13,7 @@ import {
   TypeScriptObjectTypeDefinitionGenerator,
 } from '../typescript';
 import { Writer } from '../writer';
-import { RouterDefinition, RouterOperation, TypeScriptInterface, TypeScriptTypeAlias } from 'model';
+import { RouterDefinition, RouterOperation, TypeScriptInterface, TypeScriptTypeAlias } from '../../model';
 import { KoaRouterGenerator } from './koa-router';
 
 const router = new RouterDefinition();

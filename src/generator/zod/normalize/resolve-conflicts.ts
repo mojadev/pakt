@@ -1,4 +1,4 @@
-import { TypeModel, TypePath } from 'model';
+import { TypeModel, TypePath } from '../../../model';
 
 export const resolveConflicts = (type: Record<TypePath, TypeModel>): Record<TypePath, TypeModel> => {
   const result: Record<TypePath, TypeModel> = { ...type };

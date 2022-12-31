@@ -1,5 +1,5 @@
 import { camelCase, pascalCase } from 'change-case';
-import { generateCodeModelForType } from 'generator/typescript/mapper';
+import { generateCodeModelForType } from '../generator/typescript/mapper';
 import {
   Parameter,
   RequestBodies,
@@ -11,7 +11,7 @@ import {
   RouterOperation,
   RouterPath,
   RoutingModel,
-} from 'model';
+} from '../model';
 
 export const toToRouterCodeModel = (routerModel: RoutingModel): RouterDefinition => {
   const model = new RouterDefinition();

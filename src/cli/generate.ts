@@ -1,7 +1,7 @@
 import { program } from 'commander';
 import fs from 'fs/promises';
 import path from 'path';
-import { formatSource } from 'postprocess/prettier-format';
+import { formatSource } from '../postprocess/prettier-format';
 import { KoaRecipe } from '../generator/koa/koa';
 import { importModel } from '../model';
 

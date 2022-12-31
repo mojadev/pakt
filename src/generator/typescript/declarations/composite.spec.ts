@@ -1,7 +1,7 @@
-import { Registry } from 'generator/code-generator';
-import { expectSource } from 'generator/verify/source-assertions';
-import { Writer } from 'generator/writer';
-import { TypeScriptTypeAlias, TypeScriptTypeComposition } from 'model';
+import { Registry } from '../../code-generator';
+import { expectSource } from '../../verify/source-assertions';
+import { Writer } from '../../writer';
+import { TypeScriptTypeAlias, TypeScriptTypeComposition } from '../../../model';
 import { TypeScriptCompositeFieldGenerator, TypeScriptCompositeGenerator } from './composite';
 import { TypeScriptAliasFieldGenerator } from './interface';
 

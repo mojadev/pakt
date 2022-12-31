@@ -1,4 +1,4 @@
-import { TypeModel, TypePath } from 'model';
+import { TypeModel, TypePath } from '../../../model';
 import { orderTypes } from './order-types';
 import { resolveConflicts } from './resolve-conflicts';
 

@@ -1,4 +1,4 @@
-import { RouterPath, RoutingModel } from 'model';
+import { RouterPath, RoutingModel } from '../../model';
 import { Registry } from '../code-generator';
 import { EcmaScriptImportGenerator } from '../typescript';
 import { expectSource } from '../verify/source-assertions';

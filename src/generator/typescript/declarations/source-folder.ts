@@ -1,5 +1,5 @@
 import { mkdir } from 'fs/promises';
-import { Folder, TypeScriptModule } from 'model';
+import { Folder, TypeScriptModule } from '../../../model';
 import { join } from 'path';
 
 export const generateSource = async (root: Folder, targetPath: string): Promise<void> => {

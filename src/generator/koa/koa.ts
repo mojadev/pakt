@@ -8,12 +8,12 @@ import { ZodGenericGenerator } from '../zod/generic';
 import { ZodInterfaceGenerator } from '../zod/interface';
 import { ZodRouterModelGenerator } from '../zod/router-model';
 import { RoutingModel } from '../../model';
-import { RouterRawDefinition, TypeScriptModule } from 'model';
+import { RouterRawDefinition, TypeScriptModule } from '../../model';
 import { DataTypeGenerator } from './data-types';
 import { KoaRouterGenerator } from './koa-router';
 import { OperationTypeGenerator } from './operations';
 import { SchemaFileGenerator } from './schema';
-import { ZodLiteralGenerator } from 'generator/zod/literal';
+import { ZodLiteralGenerator } from '../zod/literal';
 
 export class KoaRecipe {
   api: TypeScriptModule[] = [];

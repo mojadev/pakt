@@ -1,6 +1,6 @@
-import { Registry } from 'generator/code-generator';
-import { expectSource } from 'generator/verify/source-assertions';
-import { TypeScriptGeneric, TypeScriptInterface, TypeScriptTypeAlias } from 'model';
+import { Registry } from '../../code-generator';
+import { expectSource } from '../../verify/source-assertions';
+import { TypeScriptGeneric, TypeScriptInterface, TypeScriptTypeAlias } from '../../../model';
 import { TypeScriptGenericFieldGenerator, TypeScriptGenericGenerator } from './generic';
 import { TypeScriptAliasFieldGenerator, TypeScriptInterfaceFieldGenerator } from './interface';
 
