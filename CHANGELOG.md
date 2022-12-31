@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/mojadev/pakt/compare/v0.1.1...v0.2.0) (2022-12-31)
+
+
+### Features
+
+* add bin field to package.json (refs: 12) ([699e8e1](https://github.com/mojadev/pakt/commit/699e8e15e2bec6bffdec44c90381c2ce1f3f33ea))
+
 ## [0.1.1](https://github.com/mojadev/pakt/compare/v0.1.0...v0.1.1) (2022-12-30)
 
 
