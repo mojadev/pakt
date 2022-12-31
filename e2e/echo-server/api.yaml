@@ -26,6 +26,9 @@ paths:
             application/json: 
               schema:
                 "$ref": "#/components/schemas/EchoResponse"  
+            application/xml: 
+              schema:
+                "$ref": "#/components/schemas/EchoResponse"  
     post:
       operationId: echoPostRequest
       parameters:

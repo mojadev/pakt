@@ -245,7 +245,7 @@ const generatePayload = (routerOperation: RouterOperation): string => {
   ${routerOperation.implementations.some((x) => (x.requestBody ?? []).length > 0) ? bodyParamImport : ''}
   let result: {body?: unknown, headers?: Record<string, string>, status?: number} = {};
   switch(mimeType) {
-${cases.join('\n')}
+${cases.join('\nbreak;\n')}
   }
   
   ctx.body = result.body;
