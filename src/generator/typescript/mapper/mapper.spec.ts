@@ -4,6 +4,7 @@ import { generateCodeModelForType } from './index';
 describe('Router Types to Code Model', () => {
   it.each`
     type         | modelType
+    ${'empty'}   | ${'void'}
     ${'string'}  | ${'string'}
     ${'number'}  | ${'number'}
     ${'big'}     | ${'BigInt'}

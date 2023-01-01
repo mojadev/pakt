@@ -33,6 +33,7 @@ export interface TypeModel {
     | 'not'
     | 'binary'
     | 'base64'
+    | 'empty'
     | 'any';
   ref?: string;
   pattern?: string;

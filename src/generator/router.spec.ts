@@ -260,52 +260,66 @@ describe('API Model to Router Code model mapper', () => {
 
     expect(codeModel.path).toEqual('pet/:id');
   });
-});
 
-it('should create TypeScriptDataStructures for every type in requests', () => {
-  const path = {
-    method: 'post',
-    operation: 'updatePets',
-    path: 'pet/:id',
-    requestBodies: {
-      'application/json': { type: 'object', properties: { name: { type: 'string' } } },
-      'text/plain': { type: 'string' },
-    },
-    responses: {
-      200: { '*/*': { type: 'string' } },
-    },
-  } as RouterPath;
-
-  const codeModel = toObject(mapToRouterCodeModel(path));
-  const requestBodies = codeModel.implementations[0].requestBody as RequestBody[];
-
-  expect(requestBodies).toHaveLength(2);
-  expect(requestBodies[0]).toEqual({
-    mimeType: 'application/json',
-    payload: {
-      definition: {
-        name: {
-          alias: 'string',
-          exported: true,
-          name: 'name',
-          required: false,
-        },
+  it('should create TypeScriptDataStructures for every type in requests', () => {
+    const path = {
+      method: 'post',
+      operation: 'updatePets',
+      path: 'pet/:id',
+      requestBodies: {
+        'application/json': { type: 'object', properties: { name: { type: 'string' } } },
+        'text/plain': { type: 'string' },
       },
-      exported: true,
-      extends: [],
-      name: 'ApplicationJsonRequest',
-    },
+      responses: {
+        200: { '*/*': { type: 'string' } },
+      },
+    } as RouterPath;
+
+    const codeModel = toObject(mapToRouterCodeModel(path));
+    const requestBodies = codeModel.implementations[0].requestBody as RequestBody[];
+
+    expect(requestBodies).toHaveLength(2);
+    expect(requestBodies[0]).toEqual({
+      mimeType: 'application/json',
+      payload: {
+        definition: {
+          name: {
+            alias: 'string',
+            exported: true,
+            name: 'name',
+            required: false,
+          },
+        },
+        exported: true,
+        extends: [],
+        name: 'ApplicationJsonRequest',
+      },
+    });
+    expect(requestBodies[1]).toEqual({
+      mimeType: 'text/plain',
+      payload: {
+        exported: true,
+        alias: 'string',
+        name: 'TextPlainRequest',
+      },
+    });
   });
-  expect(requestBodies[1]).toEqual({
-    mimeType: 'text/plain',
-    payload: {
-      exported: true,
-      alias: 'string',
-      name: 'TextPlainRequest',
-    },
+
+  it('should support empty responses', () => {
+    const path = {
+      method: 'get',
+      operation: 'getPet',
+      path: 'pet/:id',
+      responses: {
+        404: { 'application/json': { type: 'empty' } },
+      },
+    } as RouterPath;
+
+    const codeModel = mapToRouterCodeModel(path);
+
+    expect(new Set(codeModel.allResponses().map((x) => x.mimeType))).toEqual(new Set(['application/json']));
   });
 });
-
 const toObject = <T>(x: T): T => JSON.parse(JSON.stringify(x));
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
