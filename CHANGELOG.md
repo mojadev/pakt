@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.7](https://github.com/mojadev/pakt/compare/v0.2.6...v0.2.7) (2023-01-01)
+
+
+### Bug Fixes
+
+* **mapper:** fix empty responses being mapped as */* type (refs 36) ([b56cb2a](https://github.com/mojadev/pakt/commit/b56cb2a492c0317fd3be12ae4dbd2c8a3b1e76d9))
+* **types:** broaden response types in type declarations  (refs 37) ([b56cb2a](https://github.com/mojadev/pakt/commit/b56cb2a492c0317fd3be12ae4dbd2c8a3b1e76d9))
+
 ## [0.2.6](https://github.com/mojadev/pakt/compare/v0.2.5...v0.2.6) (2022-12-31)
 
 
