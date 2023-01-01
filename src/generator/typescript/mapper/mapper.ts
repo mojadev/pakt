@@ -14,6 +14,7 @@ export const getTypeMapper = (): TypeHandlerCandidate[] => [
   allOfCompositionHandler,
   anyOfCompositionHandler,
   literalCompositionHandler,
+  (name, { type }) => (type === 'empty' ? new TypeScriptTypeAlias(name, 'void') : undefined),
   (name, { type }) => (type === 'big' ? new TypeScriptTypeAlias(name, 'BigInt') : undefined),
   (name, { type }) => (type === 'base64' ? new TypeScriptTypeAlias(name, 'Buffer') : undefined),
   (name, { type }) => (type === 'date' ? new TypeScriptTypeAlias(name, 'Date') : undefined),

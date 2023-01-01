@@ -23,7 +23,7 @@ export class DataTypeGenerator implements CodeGenerator<object> {
       `
       )
       .writeLine(
-        'export type Response<TResponse extends Record<number, object>> = GeneralResponse<TResponse, keyof TResponse>;'
+        'export type Response<TResponse extends Record<number, void | number | string | object>> = GeneralResponse<TResponse, keyof TResponse>;'
       )
       .writeLine('export interface ApiOperation<TResponse extends Record<number, unknown>> ')
       .inlineBlock(() => writer.write('response: TResponse;'))
@@ -45,10 +45,10 @@ export class DataTypeGenerator implements CodeGenerator<object> {
       .blankLine()
       .write(
         `
-export type ApiPayload<Api> = (Api extends PathParams<infer Params> ? { path: Params } : {}) &
-  (Api extends QueryParams<infer Query> ? { query: Query } : {}) &
-  (Api extends Headers<infer Header> ? { header: Header } : {}) &
-  (Api extends Body<infer Body> ? { body: Body } : {});`
+export type ApiPayload<Api> = (Api extends PathParams<infer Params> ? { path: Params } : object) &
+  (Api extends QueryParams<infer Query> ? { query: Query } : object) &
+  (Api extends Headers<infer Header> ? { header: Header } : object) &
+  (Api extends Body<infer Body> ? { body: Body } : object);`
       )
       .blankLine()
       .write(
@@ -59,7 +59,7 @@ export type ImplFunction<Api> = Api extends ApiOperation<infer TResponse>
       `
       )
       .blankLine()
-      .write('export type ApiResponse<Api> = Api extends ApiOperation<infer Response> ? Response : {};');
+      .write('export type ApiResponse<Api> = Api extends ApiOperation<infer Response> ? Response : object;');
     return writer;
   }
 }

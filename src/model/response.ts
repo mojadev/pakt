@@ -21,7 +21,7 @@ const parseResponseForStatusCode = (response: OpenAPIV3_1.ResponseObject): Recor
   return Object.keys(response.content as OpenAPIV3_1.MediaTypeObject).reduce((prev, current) => {
     const mediaTypeObject: OpenAPIV3.MediaTypeObject = content[current] as OpenAPIV3.MediaTypeObject;
     if (mediaTypeObject.schema == null) {
-      return { ...prev };
+      return { ...prev, [current]: { type: 'empty' } as TypeModel };
     }
     return {
       ...prev,

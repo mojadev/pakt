@@ -121,6 +121,29 @@ describe('Model representing routing and rules', () => {
     expect(param.type.children?.[0].type).toEqual('string');
   });
 
+  it('should allow empty responses with a mime type', () => {
+    const spec = {
+      ...specHeader,
+      paths: {
+        '/pets': {
+          get: {
+            responses: {
+              404: {
+                description: 'success',
+                content: {
+                  'application/json': {},
+                },
+              },
+            },
+          },
+        },
+      },
+    } as OpenAPIV3_1.Document;
+
+    const model = transformModel(spec);
+    expect(model.routerPaths[0].responses[404]).toEqual({ 'application/json': { type: 'empty' } });
+  });
+
   it('should add queryParams to the router model', () => {
     const spec = {
       ...specHeader,
@@ -141,6 +164,7 @@ describe('Model representing routing and rules', () => {
           },
         },
       },
+      components: {},
     } as OpenAPIV3_1.Document;
 
     const model = transformModel(spec);
@@ -165,6 +189,7 @@ describe('Model representing routing and rules', () => {
                   type: 'string',
                 },
               },
+
               {
                 in: 'query',
                 name: 'required',
@@ -280,7 +305,7 @@ describe('Model representing routing and rules', () => {
     expect(model.types.Pet.type).toEqual('not');
   });
 
-  it('should set response bodies for each mime type defined in the spec', () => {
+  it('should set request bodies for each mime type defined in the spec', () => {
     const spec = {
       ...specHeader,
       paths: {

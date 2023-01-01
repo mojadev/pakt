@@ -28,7 +28,12 @@ paths:
                 "$ref": "#/components/schemas/EchoResponse"  
             application/xml: 
               schema:
-                "$ref": "#/components/schemas/EchoResponse"  
+                "$ref": "#/components/schemas/EchoResponse"
+        404:
+          description: Not found
+          content: {
+            application/json: {}
+          }
     post:
       operationId: echoPostRequest
       parameters:
