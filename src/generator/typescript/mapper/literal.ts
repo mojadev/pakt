@@ -5,7 +5,7 @@ export const literalCompositionHandler: TypeHandlerCandidate = (
   name: string,
   type: TypeModel
 ): ReturnType<TypeHandlerCandidate> => {
-  if (type.type !== 'string' || !type.enum || type.enum.length < 1) {
+  if (type.type !== 'string' || !type.enum) {
     return;
   }
   const result = type.enum.map((enumValue, idx) => new TypeScriptLiteral(`${name}_${idx}`, enumValue));
