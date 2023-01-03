@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.8](https://github.com/mojadev/pakt/compare/v0.2.7...v0.2.8) (2023-01-03)
+
+
+### Bug Fixes
+
+* remove string conversion of single-literal enum (refs: [#41](https://github.com/mojadev/pakt/issues/41)) ([f95e473](https://github.com/mojadev/pakt/commit/f95e47303b4bf1a061c2533811b68444ce283ed9))
+
 ## [0.2.7](https://github.com/mojadev/pakt/compare/v0.2.6...v0.2.7) (2023-01-01)
 
 
