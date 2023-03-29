@@ -48,6 +48,7 @@ export interface TypeModel {
   writeOnly?: boolean;
   children?: TypeModel[];
   properties?: Record<string, TypeModel>;
+  lazy?: boolean;
 }
 
 export interface RequestParam {

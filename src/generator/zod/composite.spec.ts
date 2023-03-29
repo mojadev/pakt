@@ -20,6 +20,16 @@ describe('Composite zod generator', () => {
     expect(result).toEqual('z.union([z.string(), zStringAsNumber])');
   });
 
+  it('should create an extends chain for intersection types', () => {
+    const type = new TypeScriptTypeComposition('intersection', 'intersection')
+      .addChild(new TypeScriptTypeAlias('string', 'BaseModel'))
+      .addChild(new TypeScriptTypeAlias('string', 'Extension'));
+
+    const result = generator.generate(type, new Writer()).toString();
+
+    expect(result).toEqual('BaseModelSchema.extend(ExtensionSchema.shape)');
+  });
+
   it('should write a single type in case the union contains only one child', () => {
     const type = new TypeScriptTypeComposition('union', 'union').addChild(new TypeScriptTypeAlias('number', 'number'));
 

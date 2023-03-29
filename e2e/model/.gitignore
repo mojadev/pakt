@@ -1,0 +1,3 @@
+*.ts
+!server.ts
+!*.spec.ts

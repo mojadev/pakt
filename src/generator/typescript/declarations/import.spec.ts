@@ -14,6 +14,14 @@ describe('Import code generator', () => {
     expect(sourceCode).toEqual('import defaultName from "./path";\n');
   });
 
+  it('should import types on typeOnly imports', () => {
+    const importDefinition = new EcmaScriptImport('./path').setDefaultImport('defaultName').setTypeOnly(true);
+
+    const sourceCode = generator.generate(importDefinition).toString();
+
+    expect(sourceCode).toEqual('import type defaultName from "./path";\n');
+  });
+
   it('should generate named imports with the fields defined in the model', () => {
     const importDefinition = new EcmaScriptImport('./path').addNamedImports(['value1', 'value2']);
 

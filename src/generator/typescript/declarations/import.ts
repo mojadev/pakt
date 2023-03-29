@@ -11,6 +11,7 @@ export class EcmaScriptImportGenerator implements CodeGenerator<EcmaScriptImport
     }
     writer
       .write('import ')
+      .conditionalWrite(Boolean(ecmaImport.typeOnly), 'type ')
       .conditionalWrite(Boolean(ecmaImport.namespaceImport), `* as ${ecmaImport.namespaceImport ?? 'unkno'}`)
       .conditionalWrite(Boolean(ecmaImport.defaultImport), `${ecmaImport.defaultImport ?? 'unknown'}`)
       .conditionalWrite(Boolean(ecmaImport.namedImports) && Boolean(ecmaImport.defaultImport), ', ')

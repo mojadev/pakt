@@ -1,3 +1,4 @@
+import { isType, TypeScriptGeneric } from '../../../model';
 import { toPlainObject } from '../../../model/generated-code-model';
 import { arrayHandler } from './array';
 
@@ -20,6 +21,18 @@ describe('array type handler', () => {
       name: 'test',
       exported: true,
     });
+  });
+
+  it('should support composite children when using oneOf as a type', () => {
+    const result = arrayHandler('test', {
+      type: 'array',
+      children: [{ type: 'oneOf', children: [{ type: 'string' }, { type: 'number' }] }],
+    });
+
+    if (!result || !isType<TypeScriptGeneric>('generic', result)) {
+      throw new Error('type should be generic');
+    }
+    expect(result.genericName).toEqual('Array');
   });
 
   it('should use generic array definitions', () => {

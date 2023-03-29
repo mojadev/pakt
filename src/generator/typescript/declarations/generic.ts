@@ -14,7 +14,9 @@ export class TypeScriptGenericGenerator implements CodeGenerator<TypeScriptGener
       writer.write('unknown;');
       return writer;
     }
-    return typeGenerator.generate(model, writer);
+    typeGenerator.generate(model, writer);
+    writer.write(';');
+    return writer;
   }
 }
 

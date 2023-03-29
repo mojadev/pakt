@@ -1,9 +1,9 @@
-import { CodeGenerator, Registry } from '../code-generator';
-import { generateCodeModelForType } from '../typescript/mapper';
-import { identifyImports } from '../typescript/mapper/identify-imports';
-import { Writer } from '../writer';
-import { RoutingModel } from '../../model';
-import { getModelType } from '../../model/code-model.decorator';
+import { CodeGenerator, Registry } from './code-generator';
+import { generateCodeModelForType } from './typescript/mapper';
+import { identifyImports } from './typescript/mapper/identify-imports';
+import { Writer } from './writer';
+import { RoutingModel } from '../model';
+import { getModelType } from '../model/code-model.decorator';
 
 const fileRules = [
   '/* eslint-disable @typescript-eslint/array-type */',

@@ -1,20 +1,20 @@
 import { program } from 'commander';
 import fs from 'fs/promises';
 import path from 'path';
-import { formatSource } from '../postprocess/prettier-format';
-import { KoaRecipe } from '../generator/koa/koa';
+import { ModelOnlyRecipe } from '../generator/model-only';
 import { importModel } from '../model';
+import { formatSource } from '../postprocess/prettier-format';
 
 program
-  .command('generate <file> <folder>')
-  .description('Generate or regenerate a koa api from the OpenAPI 3+ spec')
+  .command('generate-models <file> <folder>')
+  .description('Generate or regenerate models from the OpenAPI 3+ spec')
   .action(async (file: string, folder: string) => {
     await generateApi(file, folder);
   });
 
 export async function generateApi(file: string, folder: string): Promise<void> {
   const model = importModel(file);
-  const recipe = new KoaRecipe(model);
+  const recipe = new ModelOnlyRecipe(model);
   const basePath = folder;
   try {
     await fs.mkdir(basePath);
