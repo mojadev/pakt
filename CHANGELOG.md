@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/mojadev/pakt/compare/v0.3.0...v0.3.1) (2023-03-29)
+
+
+### Bug Fixes
+
+* explicit cast for zStringAsNumber to prevent unknown type ([e65fce2](https://github.com/mojadev/pakt/commit/e65fce2c4503d4650e151d1fc5f614760cef95e6))
+
 ## [0.3.0](https://github.com/mojadev/pakt/compare/v0.2.9...v0.3.0) (2023-03-29)
 
 
