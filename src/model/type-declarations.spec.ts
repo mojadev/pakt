@@ -1,4 +1,5 @@
 import { OpenAPIV3_1 } from 'openapi-types';
+import { number } from 'zod';
 import { parseType } from './type-declarations';
 
 describe('Type Declarations', () => {
@@ -138,5 +139,53 @@ describe('Type Declarations', () => {
     } as OpenAPIV3_1.SchemaObject);
 
     expect(result.additionalProperties).toBe(true);
+  });
+
+  it.each`
+    type
+    ${'oneOf'}
+    ${'anyOf'}
+    ${'allOf'}
+  `('should support $type definitions and create union types', ({ type }) => {
+    const result = parseType({
+      description: 'Time',
+      [type]: [
+        { type: 'number', description: 'An UNIX timestamp' },
+        { type: 'string', description: 'An ISO Datetime string' },
+      ],
+    } as OpenAPIV3_1.SchemaObject);
+
+    expect(result.type).toEqual(type);
+    expect(result.children?.length).toEqual(2);
+    if (!result.children) {
+      throw new Error('Children are missing');
+    }
+    expect(result.children[0].type).toEqual('number');
+    expect(result.children[0].documentation).toEqual('An UNIX timestamp');
+    expect(result.children[1].type).toEqual('string');
+    expect(result.children[1].documentation).toEqual('An ISO Datetime string');
+  });
+
+  it.each`
+    type
+    ${'oneOf'}
+    ${'anyOf'}
+    ${'allOf'}
+  `('should support $type definitions and create union types as array items', ({ type }) => {
+    const result = parseType({
+      type: 'array',
+      description: 'Time',
+      items: {
+        [type]: [
+          { type: 'number', description: 'An UNIX timestamp' },
+          { type: 'string', description: 'An ISO Datetime string' },
+        ],
+      },
+    } as OpenAPIV3_1.SchemaObject);
+
+    if (!result.children) {
+      throw new Error('Children are missing');
+    }
+    expect(result.children[0].type).toEqual(type);
   });
 });

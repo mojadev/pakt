@@ -1,0 +1,84 @@
+openapi: 3.0.1
+info:
+  title: Letter datatype
+  description: A letter is a document that can be sent to a recipient and adheres to a specific format.
+  version: 1.0.0
+components:
+  schemas:
+    Document:
+      type: object
+      required:
+        - dimension
+        - format
+      properties:
+        dimension:
+          type: string
+          description: The paper format to use
+          enum:
+            - DINA4
+        format:
+          type: string
+          description: The letter format to use
+          enum:
+            - DIN5004
+      content:
+        $ref: '#/components/schemas/ContentNode'
+    ContentNode:
+      type: array
+      items:
+        oneOf:
+          - $ref: '#/components/schemas/LayoutNode'
+    MeasuredUnit:
+      type: object
+      required:
+        - value
+        - unit
+      properties:
+        value:
+          description: The value the measured unit
+          type: number
+        unit:
+          description: The unit
+          type: string
+          enum:
+            - mm
+            - cm
+            - px
+            - em
+            - rem
+            - '%'
+            - pt
+
+    SizeDefinition:
+      type: object
+      properties:
+        width:
+          $ref: '#/components/schemas/MeasuredUnit'
+        height:
+          $ref: '#/components/schemas/MeasuredUnit'
+    BaseNode:
+      type: object
+      description: Common properties shared by all nodes. This type is not used by itself
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+    LayoutNode:
+      description: An node tree definining the layout of a document
+      allOf:
+        - $ref: '#/components/schemas/BaseNode'
+        - type: object
+          properties:
+            type:
+              type: string
+              description: The type of this layout container
+              enum:
+                - container
+                - column
+                - row
+            size:
+              $ref: '#/components/schemas/SizeDefinition'
+            children:
+              $ref: '#/components/schemas/ContentNode'

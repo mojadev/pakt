@@ -4,6 +4,7 @@ import { anyOfCompositionHandler } from './any-of';
 import { arrayHandler } from './array';
 import { literalCompositionHandler } from './literal';
 import { objectTypeParser } from './object-type';
+import { oneOfCompositionHandler } from './one-of';
 import { refTypeHandler } from './refs';
 import { TypeHandlerCandidate } from './type';
 
@@ -11,6 +12,7 @@ export const getTypeMapper = (): TypeHandlerCandidate[] => [
   objectTypeParser,
   arrayHandler,
   refTypeHandler,
+  oneOfCompositionHandler,
   allOfCompositionHandler,
   anyOfCompositionHandler,
   literalCompositionHandler,

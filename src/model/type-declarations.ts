@@ -159,6 +159,20 @@ const binaryParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
   };
 };
 
+const compositeTypeParser: OpenApiTypeParser = (type: OpenAPIV3_1.SchemaObject) => {
+  const matchingComposite = ['anyOf' as const, 'oneOf' as const, 'allOf' as const].find(
+    (compositeKeyword) => compositeKeyword in type
+  );
+
+  if (!matchingComposite) {
+    return;
+  }
+  return {
+    type: matchingComposite,
+    children: type[matchingComposite]?.map((compositeChild) => parseType(compositeChild)),
+  };
+};
+
 const openApiParser: OpenApiTypeParser[] = [
   referenceParser,
   arrayParser,
@@ -170,6 +184,7 @@ const openApiParser: OpenApiTypeParser[] = [
   numberParser,
   integerParser,
   booleanParser,
+  compositeTypeParser,
   stringTypeParser,
   fallbackParser,
 ];

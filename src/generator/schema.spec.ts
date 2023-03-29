@@ -1,8 +1,8 @@
-import { Registry } from '../code-generator';
-import { expectSource } from '../verify/source-assertions';
-import { EcmaScriptImportGenerator } from '../typescript';
-import { Writer } from '../writer';
-import { RoutingModel } from '../../model';
+import { Registry } from './code-generator';
+import { expectSource } from './verify/source-assertions';
+import { EcmaScriptImportGenerator } from './typescript';
+import { Writer } from './writer';
+import { RoutingModel } from '../model';
 import { SchemaFileGenerator } from './schema';
 
 describe('Schema generator', () => {
