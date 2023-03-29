@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.9](https://github.com/mojadev/pakt/compare/v0.2.8...v0.2.9) (2023-03-29)
+
+
+### Bug Fixes
+
+* fix oneOf under array not working (refs [#44](https://github.com/mojadev/pakt/issues/44)) ([bf2be73](https://github.com/mojadev/pakt/commit/bf2be736063a98a9889da7cbd60150b8f9a581d3))
+* fix union and intersection types not created correectly (refs [#44](https://github.com/mojadev/pakt/issues/44)) ([93d2c9b](https://github.com/mojadev/pakt/commit/93d2c9b58bbcfb1cf207f3ae66650465731e2b0d))
+
 ## [0.2.8](https://github.com/mojadev/pakt/compare/v0.2.7...v0.2.8) (2023-01-03)
 
 
