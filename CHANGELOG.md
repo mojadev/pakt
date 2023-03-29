@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/mojadev/pakt/compare/v0.2.9...v0.3.0) (2023-03-29)
+
+
+### Features
+
+* add model-only deployment ([2684d0d](https://github.com/mojadev/pakt/commit/2684d0de5365f5cf4011ed26643b27f2067bb098))
+
 ## [0.2.9](https://github.com/mojadev/pakt/compare/v0.2.8...v0.2.9) (2023-03-29)
 
 
