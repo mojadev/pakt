@@ -13,7 +13,7 @@ export class ZodStringAsNumberGenerator implements CodeGenerator<unknown> {
     writer.write(`export const zStringAsNumber = ${zodSymbol}.preprocess((input: unknown) => {
   const processed = ${zodSymbol}.string().regex(/^\\d+$/).transform(Number).safeParse(input);
   return processed.success ? processed.data : input;
-}, ${zodSymbol}.number());
+}, ${zodSymbol}.number()) as ${zodSymbol}.ZodEffects<z.ZodTypeAny, number, number>;;;
 
 `);
     return writer;
