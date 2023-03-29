@@ -40,4 +40,19 @@ describe('Ref Type handler', () => {
 
     expect(result.getAliasSource()).toEqual('components/schema');
   });
+
+  it('should mark lazy references as lazy', () => {
+    const lazy = refTypeHandler('test', {
+      ref: '#/components/schema/TestType',
+      type: 'ref',
+      lazy: true,
+    }) as TypeScriptTypeAlias;
+    const staticValue = refTypeHandler('test', {
+      ref: '#/components/schema/TestType',
+      type: 'ref',
+    }) as TypeScriptTypeAlias;
+
+    expect(lazy.markedAsLazy()).toEqual(true);
+    expect(staticValue.markedAsLazy()).toEqual(false);
+  });
 });

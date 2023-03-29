@@ -19,12 +19,28 @@ export class ZodCompositeGenerator implements CodeGenerator<TypeScriptTypeCompos
       this.registry.generateCode(model.children[0], writer);
       return writer;
     }
+    if (model.conjunction === 'intersection') {
+      return this.generateExtensionChain(model, writer);
+    }
     writer.write(this.zodImport.defaultImport ?? 'z').write('.union([');
     model.children.forEach((child, idx) => {
       this.registry.generateCode(child, writer);
       writer.conditionalWrite(idx !== model.children.length - 1, ', ');
     });
     writer.write('])');
+    return writer;
+  }
+
+  generateExtensionChain(model: TypeScriptTypeComposition, writer: Writer): Writer {
+    model.children.forEach((child, i) => {
+      if (i) {
+        writer.write('.extend(');
+      }
+      this.registry.generateCode(child, writer);
+      if (i) {
+        writer.write('.shape)');
+      }
+    });
     return writer;
   }
 }

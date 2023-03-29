@@ -5,8 +5,7 @@ export const resolveConflicts = (type: Record<TypePath, TypeModel>): Record<Type
   Object.entries(type).forEach(([name, value]) => {
     const references = getAllReferencesInModel(value);
     if (references.includes(name)) {
-      result['_' + name] = { ...value };
-      result[name] = replaceReferences(value, name, '_' + name);
+      result[name] = markReferencesAsLazy(value, name);
     }
     references.forEach((reference) => {
       if (!type[reference]) {
@@ -14,26 +13,25 @@ export const resolveConflicts = (type: Record<TypePath, TypeModel>): Record<Type
       }
       const references = getAllReferencesInModel(type[reference]);
       if (type[reference] && references.includes(name)) {
-        result[reference] = replaceReferences(type[reference], name, '_' + name);
-        result['_' + name] = { ...value };
+        result[reference] = markReferencesAsLazy(type[reference], name);
       }
     });
   });
   return result;
 };
 
-const replaceReferences = (type: TypeModel, source: string, replacement: string): TypeModel => {
-  if (type.type === 'ref' && type.ref && type.ref === source) {
-    return { ...type, ref: replacement };
+const markReferencesAsLazy = (type: TypeModel, source: string): TypeModel => {
+  if (type.type === 'ref' && type.ref && type.ref.split('/').reverse()[0] === source) {
+    return { ...type, lazy: true };
   }
 
   const result: TypeModel = { ...type };
   if (type.children != null) {
-    result.children = type.children.map((x) => replaceReferences(x, source, replacement));
+    result.children = type.children.map((x) => markReferencesAsLazy(x, source));
   }
   if (type.properties != null) {
     result.properties = Object.entries(type.properties).reduce(
-      (prev, [key, value]) => ({ ...prev, [key]: replaceReferences(value, source, replacement) }),
+      (prev, [key, value]) => ({ ...prev, [key]: markReferencesAsLazy(value, source) }),
       {}
     );
   }

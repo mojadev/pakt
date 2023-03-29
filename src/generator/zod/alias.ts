@@ -23,7 +23,14 @@ export class ZodAliasGenerator implements CodeGenerator<TypeScriptTypeAlias> {
     number: 'zStringAsNumber',
   } as Record<string, string>;
 
-  generate(model: TypeScriptTypeAlias, writer: Writer): Writer {
+  generate(model: TypeScriptTypeAlias, writer: Writer) {
+    if (model.markedAsLazy()) {
+      return this.generateLazy(model, writer);
+    }
+    return this.generateAlias(model, writer);
+  }
+
+  generateAlias(model: TypeScriptTypeAlias, writer: Writer): Writer {
     if (!this.primitives[model.baseType] && !this.customDirectives[model.baseType]) {
       const value = model.alias;
       writer.write(pascalCase(value + '-Schema'));
@@ -37,6 +44,26 @@ export class ZodAliasGenerator implements CodeGenerator<TypeScriptTypeAlias> {
     if (model.isArray()) {
       writer.write('.array()');
     }
+    return writer;
+  }
+
+  generateLazy(model: TypeScriptTypeAlias, writer: Writer) {
+    const zodImport = this.zodImport.defaultImport ?? 'z';
+    const alias = new TypeScriptTypeAlias(model.name, model.alias, model.exported);
+    const aliasSource = model.getAliasSource();
+    if (aliasSource) {
+      alias.withAliasSource(aliasSource);
+    }
+
+    writer
+      .write(zodImport)
+      .write('.lazy((): ')
+      .write(zodImport)
+      .write('.ZodType<types.')
+      .write(model.baseType)
+      .write('> => ');
+    this.generateAlias(alias, writer);
+    writer.write(')');
     return writer;
   }
 

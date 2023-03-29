@@ -1,5 +1,4 @@
 import { OpenAPIV3_1 } from 'openapi-types';
-import { number } from 'zod';
 import { parseType } from './type-declarations';
 
 describe('Type Declarations', () => {

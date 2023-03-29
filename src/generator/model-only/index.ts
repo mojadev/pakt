@@ -1,16 +1,14 @@
-import { modelType, Registry } from '../code-generator';
-import { toToRouterCodeModel } from '../router';
-import { EcmaScriptImportGenerator, addBaseTypeScriptGenerators } from '../typescript';
+import { RouterRawDefinition, RoutingModel, TypeScriptModule } from '../../model';
+import { Registry } from '../code-generator';
+import { SchemaFileGenerator } from '../schema';
+import { addBaseTypeScriptGenerators, EcmaScriptImportGenerator } from '../typescript';
 import { Writer } from '../writer';
 import { ZodAliasGenerator } from '../zod/alias';
 import { ZodCompositeGenerator } from '../zod/composite';
 import { ZodGenericGenerator } from '../zod/generic';
 import { ZodInterfaceGenerator } from '../zod/interface';
-import { ZodRouterModelGenerator } from '../zod/router-model';
-import { RoutingModel } from '../../model';
-import { RouterRawDefinition, TypeScriptModule } from '../../model';
-import { SchemaFileGenerator } from '../schema';
 import { ZodLiteralGenerator } from '../zod/literal';
+import { ZodRouterModelGenerator } from '../zod/router-model';
 
 export class ModelOnlyRecipe {
   api: TypeScriptModule[] = [];

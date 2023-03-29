@@ -13,5 +13,6 @@ describe('Echo server api creation test', () => {
 
   it('should generate the source successfully', async () => {
     await generateSource('model');
+    const result = recipe.generateImplementation();
   });
 });

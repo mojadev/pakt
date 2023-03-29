@@ -42,4 +42,13 @@ describe('zod alias generator', () => {
 
     expect(result).toEqual('z.string().array()');
   });
+
+  it('should create a lazy function returning the zod type for lazy aliases', () => {
+    const type = new TypeScriptTypeAlias('alias', 'RecursiveType');
+    type.markAsLazy();
+    const writer = new Writer();
+    generator.generate(type, writer);
+
+    expect(writer.toString()).toContain('z.lazy((): z.ZodType<types.RecursiveType> => RecursiveTypeSchema)');
+  });
 });

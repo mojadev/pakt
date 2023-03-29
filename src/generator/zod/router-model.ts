@@ -16,6 +16,11 @@ import { ZodStringAsNumberGenerator } from './stringAsNumber';
 @codeGenerator('router:raw')
 export class ZodRouterModelGenerator implements CodeGenerator<RoutingModel> {
   private readonly importZodSymbol = new EcmaScriptImport('zod', true).setDefaultImport('z');
+  /**
+   * This is required for lazy schemas, as we need to give a type hint in these cases
+   * A cleaner way would be to exclude the EcmaScriptImports from the nodes and include them in a second pass.
+   */
+  private readonly importTypes = new EcmaScriptImport('schemas').setNamespaceImport('types').setTypeOnly(true);
 
   private readonly customZodFunctions: Array<CodeGenerator<unknown>> = [
     new ZodStringAsNumberGenerator(this.importZodSymbol),
@@ -25,9 +30,10 @@ export class ZodRouterModelGenerator implements CodeGenerator<RoutingModel> {
 
   generate(model: RoutingModel, writer: Writer): Writer {
     this.registry.generateCode(this.importZodSymbol, writer);
+    this.registry.generateCode(this.importTypes, writer);
     writer.blankLine();
-    this.generateExplicitTypeSchemas(model, writer);
     this.customZodFunctions.forEach((zodFunction) => zodFunction.generate(model, writer));
+    this.generateExplicitTypeSchemas(model, writer);
 
     this.generatePathParamSchemas(model, writer);
 

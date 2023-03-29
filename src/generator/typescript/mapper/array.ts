@@ -1,6 +1,6 @@
 import { generateCodeModelForType } from '.';
 import { isType } from '../../../model/code-model.decorator';
-import { TypeScriptGeneric, TypeScriptTypeAlias, TypeScriptTypeComposition } from '../../../model/generated-code-model';
+import { TypeScriptGeneric, TypeScriptTypeAlias } from '../../../model/generated-code-model';
 import { TypeHandlerCandidate } from './type';
 
 export const arrayHandler: TypeHandlerCandidate = (name, type) => {

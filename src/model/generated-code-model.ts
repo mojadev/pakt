@@ -3,6 +3,7 @@ import { codeModel } from './code-model.decorator';
 import { MethodName, RouterPath, RoutingModel, TypeModel } from './types';
 
 const aliasSource = Symbol('aliasSource');
+const lazy = Symbol('lazy');
 
 /**
  * Model representing the code that should be generated.
@@ -29,6 +30,7 @@ export class EcmaScriptImport {
   defaultImport?: string;
   namespaceImport?: string;
   namedImports?: string[];
+  typeOnly = false;
 
   constructor(public readonly path: string, public readonly library: boolean = false) {}
 
@@ -46,11 +48,17 @@ export class EcmaScriptImport {
     this.namedImports = Array.from(new Set([...name, ...(this.namedImports ?? [])]).values());
     return this;
   }
+
+  setTypeOnly(value: boolean) {
+    this.typeOnly = value;
+    return this;
+  }
 }
 
 @codeModel('alias')
 export class TypeScriptTypeAlias {
   [aliasSource]?: string = '';
+  [lazy]?: boolean = false;
 
   constructor(public readonly name: string, public readonly alias: string, public readonly exported: boolean = true) {}
 
@@ -69,6 +77,14 @@ export class TypeScriptTypeAlias {
 
   get baseType(): string {
     return this.alias.split('[')[0];
+  }
+
+  markAsLazy() {
+    this[lazy] = true;
+  }
+
+  markedAsLazy() {
+    return this[lazy];
   }
 }
 

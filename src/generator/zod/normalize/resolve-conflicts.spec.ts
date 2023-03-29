@@ -2,7 +2,7 @@ import type { TypeModel, TypePath } from '../../../model';
 import { getAllReferencesInModel, resolveConflicts } from './resolve-conflicts';
 
 describe('Resolve conflicts normalizer', () => {
-  it('should create a copy of a type when a circular dependency is detected in an object', () => {
+  it('should mark recursive elements as lazy', () => {
     const types: Record<TypePath, TypeModel> = {
       obj1: {
         type: 'object',
@@ -26,9 +26,8 @@ describe('Resolve conflicts normalizer', () => {
 
     const result = resolveConflicts(types);
 
-    expect(types).not.toBe(result);
-    expect(result.obj2.properties?.child.ref).toEqual('_obj1');
-    expect(result._obj1).toEqual(types.obj1);
+    expect(result.obj1.properties?.child.lazy).toEqual(true);
+    expect(result.obj2.properties?.child.lazy).toEqual(true);
   });
 
   it('should return all references on getAllReferences', () => {
