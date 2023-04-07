@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/mojadev/pakt/compare/v0.3.1...v0.4.0) (2023-04-07)
+
+
+### Miscellaneous Chores
+
+* release new minor version ([f58d3ce](https://github.com/mojadev/pakt/commit/f58d3ce176877b2f64ffcbd04a8589319d082f9f))
+
 ## [0.3.1](https://github.com/mojadev/pakt/compare/v0.3.0...v0.3.1) (2023-03-29)
 
 
