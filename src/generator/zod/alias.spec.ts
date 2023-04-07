@@ -34,7 +34,7 @@ describe('zod alias generator', () => {
   it('should use a Schema reference for type aliases', () => {
     const result = generator.generate(new TypeScriptTypeAlias('User', 'UserReference'), new Writer()).toString();
 
-    expect(result).toEqual('UserReferenceSchema');
+    expect(result).toEqual('Schemas.UserReferenceSchema');
   });
 
   it('should generate a zod array for arrays', () => {
@@ -49,6 +49,6 @@ describe('zod alias generator', () => {
     const writer = new Writer();
     generator.generate(type, writer);
 
-    expect(writer.toString()).toContain('z.lazy((): z.ZodType<types.RecursiveType> => RecursiveTypeSchema)');
+    expect(writer.toString()).toContain('z.lazy((): z.ZodType<types.RecursiveType> => Schemas.RecursiveTypeSchema)');
   });
 });

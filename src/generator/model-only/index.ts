@@ -1,14 +1,20 @@
 import { RouterRawDefinition, RoutingModel, TypeScriptModule } from '../../model';
 import { Registry } from '../code-generator';
 import { SchemaFileGenerator } from '../schema';
-import { addBaseTypeScriptGenerators, EcmaScriptImportGenerator } from '../typescript';
+import {
+  addBaseTypeScriptGenerators,
+  EcmaScriptImportGenerator,
+  TypeScriptAliasFieldGenerator,
+  TypeScriptGenericFieldGenerator,
+} from '../typescript';
+import { TypeScriptClassGenerator } from '../typescript/declarations/class';
 import { Writer } from '../writer';
 import { ZodAliasGenerator } from '../zod/alias';
 import { ZodCompositeGenerator } from '../zod/composite';
 import { ZodGenericGenerator } from '../zod/generic';
 import { ZodInterfaceGenerator } from '../zod/interface';
 import { ZodLiteralGenerator } from '../zod/literal';
-import { ZodRouterModelGenerator } from '../zod/router-model';
+import { ZodSchemaParserGenerator } from '../zod/schema-parser';
 
 export class ModelOnlyRecipe {
   api: TypeScriptModule[] = [];
@@ -21,10 +27,13 @@ export class ModelOnlyRecipe {
     this.validatorGenerator.add(new EcmaScriptImportGenerator());
     this.validatorGenerator.add(new ZodAliasGenerator());
     this.validatorGenerator.add(new ZodCompositeGenerator(this.validatorGenerator));
+    this.validatorGenerator.add(new TypeScriptClassGenerator(this.validatorGenerator));
+    this.validatorGenerator.add(new TypeScriptGenericFieldGenerator(this.validatorGenerator));
+    this.validatorGenerator.add(new TypeScriptAliasFieldGenerator());
     this.validatorGenerator.add(new ZodInterfaceGenerator(this.validatorGenerator));
     this.validatorGenerator.add(new ZodGenericGenerator(this.validatorGenerator));
     this.validatorGenerator.add(new ZodLiteralGenerator());
-    this.validatorGenerator.add(new ZodRouterModelGenerator(this.validatorGenerator));
+    this.validatorGenerator.add(new ZodSchemaParserGenerator(this.validatorGenerator));
   }
 
   generateImplementation(): Record<string, string> {

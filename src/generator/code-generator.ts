@@ -34,8 +34,6 @@ export class Registry {
 
 export interface CodeGenerator<T> {
   generate: (model: T, writer: Writer) => Writer;
-
-  matches?: (model: T) => boolean;
 }
 
 export const generateCode = (model: object, registry: Registry): string => {

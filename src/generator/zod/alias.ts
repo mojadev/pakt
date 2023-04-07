@@ -33,7 +33,7 @@ export class ZodAliasGenerator implements CodeGenerator<TypeScriptTypeAlias> {
   generateAlias(model: TypeScriptTypeAlias, writer: Writer): Writer {
     if (!this.primitives[model.baseType] && !this.customDirectives[model.baseType]) {
       const value = model.alias;
-      writer.write(pascalCase(value + '-Schema'));
+      writer.write('Schemas.' + pascalCase(value + '_Schema'));
       return writer;
     }
     if (this.primitives[model.baseType]) {

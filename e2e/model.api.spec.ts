@@ -1,8 +1,6 @@
-import { KoaRecipe } from '../src/generator/koa/koa';
-import { expectSource } from '../src/generator/verify/source-assertions';
 import { importModel } from '../src/model';
 import path from 'path';
-import { generateSource } from './steps/generate-source';
+import { generateSource } from './steps/generate-model-source';
 import { ModelOnlyRecipe } from '../src/generator/model-only';
 
 describe('Echo server api creation test', () => {
