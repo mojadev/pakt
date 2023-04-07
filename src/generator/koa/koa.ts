@@ -1,12 +1,16 @@
 import { modelType, Registry } from '../code-generator';
 import { toToRouterCodeModel } from '../router';
-import { EcmaScriptImportGenerator, addBaseTypeScriptGenerators } from '../typescript';
+import {
+  EcmaScriptImportGenerator,
+  addBaseTypeScriptGenerators,
+  TypeScriptGenericFieldGenerator,
+  TypeScriptAliasFieldGenerator,
+} from '../typescript';
 import { Writer } from '../writer';
 import { ZodAliasGenerator } from '../zod/alias';
 import { ZodCompositeGenerator } from '../zod/composite';
 import { ZodGenericGenerator } from '../zod/generic';
 import { ZodInterfaceGenerator } from '../zod/interface';
-import { ZodRouterModelGenerator } from '../zod/router-model';
 import { RoutingModel } from '../../model';
 import { RouterRawDefinition, TypeScriptModule } from '../../model';
 import { DataTypeGenerator } from './data-types';
@@ -14,6 +18,8 @@ import { KoaRouterGenerator } from './koa-router';
 import { OperationTypeGenerator } from './operations';
 import { SchemaFileGenerator } from '../schema';
 import { ZodLiteralGenerator } from '../zod/literal';
+import { ZodSchemaParserGenerator } from '../zod/schema-parser';
+import { TypeScriptClassGenerator } from '../typescript/declarations/class';
 
 export class KoaRecipe {
   api: TypeScriptModule[] = [];
@@ -24,6 +30,10 @@ export class KoaRecipe {
   constructor(private readonly model: RoutingModel) {
     addBaseTypeScriptGenerators(this.typescriptGenerator);
     this.typescriptGenerator.add(new DataTypeGenerator());
+
+    this.validatorGenerator.add(new TypeScriptGenericFieldGenerator(this.validatorGenerator));
+    this.validatorGenerator.add(new TypeScriptAliasFieldGenerator());
+    this.validatorGenerator.add(new TypeScriptClassGenerator(this.validatorGenerator));
     this.typescriptGenerator.add(new OperationTypeGenerator(this.typescriptGenerator));
     this.typescriptGenerator.add(new KoaRouterGenerator(this.typescriptGenerator));
     this.validatorGenerator.add(new EcmaScriptImportGenerator());
@@ -32,7 +42,7 @@ export class KoaRecipe {
     this.validatorGenerator.add(new ZodInterfaceGenerator(this.validatorGenerator));
     this.validatorGenerator.add(new ZodGenericGenerator(this.validatorGenerator));
     this.validatorGenerator.add(new ZodLiteralGenerator());
-    this.validatorGenerator.add(new ZodRouterModelGenerator(this.validatorGenerator));
+    this.validatorGenerator.add(new ZodSchemaParserGenerator(this.validatorGenerator));
   }
 
   generateImplementation(): Record<string, string> {

@@ -231,6 +231,51 @@ export class RouterOperation {
   }
 }
 
+@codeModel('class')
+export class TypeScriptClassModel {
+  methods: TypeScriptClassMethodModel[] = [];
+
+  constructor(public readonly name: ClassName) {}
+
+  addMethod(method: TypeScriptClassMethodModel) {
+    this.methods = [...this.methods, method];
+    return this;
+  }
+
+  getMethods() {
+    return [...this.methods];
+  }
+}
+
+@codeModel('class:method')
+export class TypeScriptClassMethodModel {
+  getter = false;
+  implementation = '';
+  static = false;
+  returnType: TypeScriptDataStructure | undefined;
+  constructor(public readonly name: string, public readonly visibilty: MethodVisibilty = 'public') {}
+
+  markAsGetter() {
+    this.getter = true;
+    return this;
+  }
+
+  markAsStatic() {
+    this.static = true;
+    return this;
+  }
+
+  withReturnType(type: TypeScriptDataStructure) {
+    this.returnType = type;
+    return this;
+  }
+
+  withImplementation(code: string) {
+    this.implementation = code;
+    return this;
+  }
+}
+
 export interface RouterOperationImplementation {
   mimeType: MimeType;
   params: Array<Omit<Parameter, 'required'>>;
@@ -258,5 +303,7 @@ export interface Parameter {
 }
 
 type MimeType = string;
+type ClassName = string;
+export type MethodVisibilty = 'public' | 'private' | 'protected';
 
 export const toPlainObject = <T>(x: T): T => JSON.parse(JSON.stringify(x));

@@ -27,7 +27,7 @@ describe('Composite zod generator', () => {
 
     const result = generator.generate(type, new Writer()).toString();
 
-    expect(result).toEqual('BaseModelSchema.extend(ExtensionSchema.shape)');
+    expect(result).toEqual('Schemas.BaseModelSchema.extend(Schemas.ExtensionSchema.shape)');
   });
 
   it('should write a single type in case the union contains only one child', () => {

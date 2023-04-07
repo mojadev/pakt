@@ -2,6 +2,8 @@ import { pascalCase } from 'change-case';
 import { RoutingModel } from '../../model';
 import {
   EcmaScriptImport,
+  TypeScriptClassMethodModel,
+  TypeScriptClassModel,
   TypeScriptDataStructure,
   TypeScriptInterface,
   TypeScriptTypeComposition,
@@ -14,7 +16,7 @@ import { normalize } from './normalize';
 import { ZodStringAsNumberGenerator } from './stringAsNumber';
 
 @codeGenerator('router:raw')
-export class ZodRouterModelGenerator implements CodeGenerator<RoutingModel> {
+export class ZodSchemaParserGenerator implements CodeGenerator<RoutingModel> {
   private readonly importZodSymbol = new EcmaScriptImport('zod', true).setDefaultImport('z');
   /**
    * This is required for lazy schemas, as we need to give a type hint in these cases
@@ -29,15 +31,39 @@ export class ZodRouterModelGenerator implements CodeGenerator<RoutingModel> {
   constructor(private readonly registry: Registry) {}
 
   generate(model: RoutingModel, writer: Writer): Writer {
+    const parserClass = this.generateParserClass(model);
     this.registry.generateCode(this.importZodSymbol, writer);
     this.registry.generateCode(this.importTypes, writer);
     writer.blankLine();
     this.customZodFunctions.forEach((zodFunction) => zodFunction.generate(model, writer));
-    this.generateExplicitTypeSchemas(model, writer);
+    writer.blankLine();
 
+    this.registry.generateCode(parserClass, writer);
+    this.generateExports(parserClass, writer);
     this.generatePathParamSchemas(model, writer);
 
     return writer;
+  }
+
+  generateExports(parserClass: TypeScriptClassModel, writer: Writer) {
+    parserClass
+      .getMethods()
+      .map((method) => method.name)
+      .forEach((alias) => {
+        writer.write('export const ').write(alias).write(' = Schemas.').write(alias).write(';').newLine();
+      });
+  }
+
+  private generateParserClass(model: RoutingModel) {
+    const parserClass = new TypeScriptClassModel('Schemas');
+    normalize(model.types).forEach(([key, value]) => {
+      const schema = new TypeScriptClassMethodModel(`${key}Schema`, 'public').markAsGetter().markAsStatic();
+      schema.withImplementation(
+        `return ${this.registry.generateCode(generateCodeModelForType(key, value), new Writer()).toString()};`
+      );
+      parserClass.addMethod(schema);
+    });
+    return parserClass;
   }
 
   generatePathParamSchemas(model: RoutingModel, writer: Writer): void {
@@ -75,15 +101,5 @@ export class ZodRouterModelGenerator implements CodeGenerator<RoutingModel> {
     writer.write('export const ').write(name).write(' = ');
     this.registry.generateCode(queryParams, writer);
     writer.write(';').blankLine();
-  }
-
-  private generateExplicitTypeSchemas(model: RoutingModel, writer: Writer): void {
-    normalize(model.types).forEach(([key, value]) => {
-      const type = generateCodeModelForType(key, value);
-      writer.write('export const ' + key + 'Schema = ');
-      this.registry.generateCode(type, writer);
-      writer.write(';');
-      writer.blankLine();
-    });
   }
 }

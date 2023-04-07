@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
+  AccessorDeclaration,
   ArrowFunction,
   CallExpression,
   CaseClause,
   ClassDeclaration,
   FunctionDeclaration,
+  MethodDeclaration,
   Project,
   SourceFile,
   SyntaxKind,
@@ -258,6 +260,37 @@ export const expectSource = (sourceContent: string, root?: string) => {
         expect(property.getInitializerOrThrow().getText()).toEqual(String(initializer));
         return classAssertions(classDeclaration);
       },
+
+      toDefineMethod: (methodName: string) => {
+        const method = classDeclaration.getMethodOrThrow(methodName);
+        return methodAssertion(method);
+      },
+
+      toDefineGetter: (getterName: string) => {
+        const accessor = classDeclaration.getGetAccessorOrThrow(getterName);
+        return methodAssertion(accessor);
+      },
+    };
+  }
+
+  function methodAssertion(method: MethodDeclaration | AccessorDeclaration) {
+    return {
+      withVisibility(visibilty: 'public' | 'private' | 'protected') {
+        method.getFirstModifierByKindOrThrow(visibilityToKind(visibilty));
+        return methodAssertion(method);
+      },
+      withImplementation(code: string | RegExp) {
+        expect(method.getBodyText()).toEqual(code);
+        return methodAssertion(method);
+      },
+      withReturnType(type: string) {
+        expect(method.getReturnTypeNode()?.getText()).toEqual(type);
+        return methodAssertion(method);
+      },
+      asStatic() {
+        expect(method.getStaticKeywordOrThrow());
+        return methodAssertion(method);
+      },
     };
   }
 
@@ -298,4 +331,15 @@ export const expectSource = (sourceContent: string, root?: string) => {
     toDefineObject: objectStatementMatcher,
     toDeclareClass: classDeclarationMatcher,
   };
+};
+
+const visibilityToKind = (visibility: 'public' | 'private' | 'protected') => {
+  switch (visibility) {
+    case 'public':
+      return SyntaxKind.PublicKeyword;
+    case 'private':
+      return SyntaxKind.PrivateKeyword;
+    case 'protected':
+      return SyntaxKind.ProtectedKeyword;
+  }
 };
