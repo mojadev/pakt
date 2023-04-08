@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/mojadev/pakt/compare/v0.4.0...v0.4.1) (2023-04-08)
+
+
+### Bug Fixes
+
+* traverse through all references (refs [#52](https://github.com/mojadev/pakt/issues/52)) ([48337aa](https://github.com/mojadev/pakt/commit/48337aa361ac152dd7dd2134e7d8130300f060db))
+
 ## [0.4.0](https://github.com/mojadev/pakt/compare/v0.3.1...v0.4.0) (2023-04-07)
 
 
