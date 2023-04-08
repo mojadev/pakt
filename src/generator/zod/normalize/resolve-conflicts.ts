@@ -2,27 +2,33 @@ import { TypeModel, TypePath } from '../../../model';
 
 export const resolveConflicts = (type: Record<TypePath, TypeModel>): Record<TypePath, TypeModel> => {
   const result: Record<TypePath, TypeModel> = { ...type };
-  Object.entries(type).forEach(([name, value]) => {
-    const references = getAllReferencesInModel(value);
-    if (references.includes(name)) {
-      result[name] = markReferencesAsLazy(value, name);
-    }
-    references.forEach((reference) => {
-      if (!type[reference]) {
-        console.warn('Could not find reference', reference, 'in types', Object.keys(type));
-      }
-      const references = getAllReferencesInModel(type[reference]);
-      if (type[reference] && references.includes(name)) {
-        result[reference] = markReferencesAsLazy(type[reference], name);
-      }
-    });
+  Object.keys(type).forEach((name) => {
+    traverseReferenceChain(name, type, [name]);
   });
   return result;
 };
 
+const traverseReferenceChain = (currentNode: string, type: Record<TypePath, TypeModel>, chain: string[]) => {
+  const references = getAllReferencesInModel(type[currentNode]);
+  const lazyRefs = references.filter((reference) => chain.includes(reference));
+  lazyRefs.forEach((lazyRef) => markReferencesAsLazy(type[currentNode], lazyRef));
+
+  references
+    .filter((x) => !chain.includes(x))
+    .forEach((reference) => {
+      if (!type[reference]) {
+        console.warn('Could not find reference', reference, 'in types', Object.keys(type));
+        return;
+      }
+      traverseReferenceChain(reference, type, [...chain, reference]);
+    });
+  return type;
+};
+
 const markReferencesAsLazy = (type: TypeModel, source: string): TypeModel => {
   if (type.type === 'ref' && type.ref && type.ref.split('/').reverse()[0] === source) {
-    return { ...type, lazy: true };
+    type.lazy = true;
+    return type;
   }
 
   const result: TypeModel = { ...type };

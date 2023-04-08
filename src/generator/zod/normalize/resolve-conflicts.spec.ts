@@ -91,6 +91,50 @@ describe('Resolve conflicts normalizer', () => {
     expect((result.obj2.children || [])[0].properties?.ref.lazy).toEqual(true);
   });
 
+  it('should mark composites with nested array references as lazy', () => {
+    const types: Record<TypePath, TypeModel> = {
+      nodeList: {
+        type: 'array',
+        children: [{ type: 'ref', ref: '#/components/schemas/node' }],
+      },
+      node: {
+        type: 'oneOf',
+        children: [
+          { type: 'ref', ref: '#/components/schemas/childType1' },
+          { type: 'ref', ref: '#/components/schemas/childType2' },
+        ],
+      },
+      childType1: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+          children: {
+            type: 'ref',
+            ref: '#/components/schemas/nodeList',
+          },
+        },
+      },
+      childType2: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+          },
+          children: {
+            type: 'ref',
+            ref: '#/components/schemas/nodeList',
+          },
+        },
+      },
+    };
+
+    const result = resolveConflicts(types);
+    expect(result.childType1.properties?.children.lazy).toBeTruthy();
+    expect(result.childType2.properties?.children.lazy).toBeTruthy();
+  });
+
   it('should return all references on getAllReferences', () => {
     const type: TypeModel = {
       type: 'object',
