@@ -1,9 +1,9 @@
-import { CodeGenerator, Registry } from './code-generator';
+import { EcmaScriptImport, RoutingModel } from '../model';
+import { getModelType } from '../model/code-model.decorator';
+import { CodeGenerator, ECMAScriptModuleGenerator, Registry } from './code-generator';
 import { generateCodeModelForType } from './typescript/mapper';
 import { identifyImports } from './typescript/mapper/identify-imports';
 import { Writer } from './writer';
-import { RoutingModel } from '../model';
-import { getModelType } from '../model/code-model.decorator';
 
 const fileRules = [
   '/* eslint-disable @typescript-eslint/array-type */',
@@ -11,7 +11,9 @@ const fileRules = [
   '/* eslint-disable @typescript-eslint/no-explicit-any */',
 ];
 
-export class SchemaFileGenerator implements CodeGenerator<RoutingModel> {
+export class SchemaFileGenerator implements CodeGenerator<RoutingModel>, ECMAScriptModuleGenerator {
+  additionalImports: EcmaScriptImport[] = [];
+
   constructor(private readonly registry: Registry) {}
 
   generate(model: RoutingModel, writer: Writer = new Writer()): Writer {
@@ -19,9 +21,14 @@ export class SchemaFileGenerator implements CodeGenerator<RoutingModel> {
 
     Object.entries(model.types)
       .map(([key, typeModel]) => generateCodeModelForType(key, typeModel))
-      .flatMap((model) => [...identifyImports(model), model])
+      .flatMap((model) => [...identifyImports(model), ...this.additionalImports, model])
       .sort((a) => (getModelType(a) === 'import' ? -1 : 1))
       .forEach((model) => this.registry.generateCode(model, writer));
     return writer;
+  }
+
+  addImport(importStatement: EcmaScriptImport) {
+    this.additionalImports = [...this.additionalImports, importStatement];
+    return this;
   }
 }

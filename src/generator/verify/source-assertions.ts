@@ -317,7 +317,19 @@ export const expectSource = (sourceContent: string, root?: string) => {
     };
   }
 
+  function toReExport(path: string) {
+    const declarationContext = sourceFile.getExportDeclarationOrThrow(
+      (declaration) => declaration.getModuleSpecifierValue() === path
+    );
+    return {
+      withName(name: string) {
+        expect(declarationContext.getNamespaceExportOrThrow().getName()).toEqual(name);
+      },
+    };
+  }
+
   return {
+    toReExport: toReExport,
     toContainDefaultImport: defaultImportMatcher,
     toContainImport: importMatcher,
     toCallFunction: functionMatcher,

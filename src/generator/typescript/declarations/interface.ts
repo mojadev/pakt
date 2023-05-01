@@ -1,7 +1,7 @@
+import { getModelType, TypeScriptInterface, TypeScriptObjectTypeLiteral } from '../../../model';
 import { CodeGenerator, Registry } from '../../code-generator';
 import { codeGenerator } from '../../code-generator.decorator';
 import { Writer } from '../../writer';
-import { getModelType, TypeScriptInterface, TypeScriptObjectTypeLiteral, TypeScriptTypeAlias } from '../../../model';
 
 @codeGenerator('interface')
 export class TypeScriptInterfaceGenerator implements CodeGenerator<TypeScriptInterface> {
@@ -55,14 +55,6 @@ export class TypeScriptObjectTypeDefinitionGenerator implements CodeGenerator<Ty
     }
     fieldInterface.generate(interfaceModel, writer);
     writer.blankLine();
-    return writer;
-  }
-}
-
-@codeGenerator('field:alias')
-export class TypeScriptAliasFieldGenerator implements CodeGenerator<TypeScriptTypeAlias> {
-  generate(model: TypeScriptTypeAlias, writer: Writer): Writer {
-    writer.write(model.alias);
     return writer;
   }
 }

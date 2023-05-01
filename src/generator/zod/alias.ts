@@ -6,7 +6,7 @@ import { Writer } from '../writer';
 
 @codeGenerator('alias')
 export class ZodAliasGenerator implements CodeGenerator<TypeScriptTypeAlias> {
-  constructor(private readonly zodImport: EcmaScriptImport = new EcmaScriptImport('zod').setDefaultImport('z')) {}
+  private fieldGenerator = new TypeScriptAliasFieldGenerator();
   private readonly primitives = {
     string: 'string',
     Date: 'date',
@@ -23,6 +23,8 @@ export class ZodAliasGenerator implements CodeGenerator<TypeScriptTypeAlias> {
     number: 'zStringAsNumber',
   } as Record<string, string>;
 
+  constructor(private readonly zodImport: EcmaScriptImport = new EcmaScriptImport('zod').setDefaultImport('z')) {}
+
   generate(model: TypeScriptTypeAlias, writer: Writer) {
     if (model.markedAsLazy()) {
       return this.generateLazy(model, writer);
@@ -31,10 +33,14 @@ export class ZodAliasGenerator implements CodeGenerator<TypeScriptTypeAlias> {
   }
 
   generateAlias(model: TypeScriptTypeAlias, writer: Writer): Writer {
-    if (!this.primitives[model.baseType] && !this.customDirectives[model.baseType]) {
-      const value = model.alias;
+    const value = model.alias;
+
+    if (!model.import && !this.primitives[model.baseType] && !this.customDirectives[model.baseType]) {
       writer.write('Schemas.' + pascalCase(value + '_Schema'));
       return writer;
+    }
+    if (model.import) {
+      writer.write(model.import.defaultImport + '.SchemaParser.' + pascalCase(value + '_Schema'));
     }
     if (this.primitives[model.baseType]) {
       this.writePrimitive(writer, model);
@@ -51,17 +57,17 @@ export class ZodAliasGenerator implements CodeGenerator<TypeScriptTypeAlias> {
     const zodImport = this.zodImport.defaultImport ?? 'z';
     const alias = new TypeScriptTypeAlias(model.name, model.alias, model.exported);
     const aliasSource = model.getAliasSource();
+
     if (aliasSource) {
       alias.withAliasSource(aliasSource);
     }
+    if (model.import) {
+      alias.withAliasImport(model.import);
+    }
 
-    writer
-      .write(zodImport)
-      .write('.lazy((): ')
-      .write(zodImport)
-      .write('.ZodType<types.')
-      .write(model.baseType)
-      .write('> => ');
+    writer.write(zodImport).write('.lazy((): ').write(zodImport).write('.ZodType<');
+    this.fieldGenerator.generate(alias, writer);
+    writer.write('> => ');
     this.generateAlias(alias, writer);
     writer.write(')');
     return writer;
@@ -78,6 +84,18 @@ export class ZodAliasGenerator implements CodeGenerator<TypeScriptTypeAlias> {
       .write('.')
       .write(this.primitives[model.baseType])
       .write('()');
+    return writer;
+  }
+}
+
+export class TypeScriptAliasFieldGenerator implements CodeGenerator<TypeScriptTypeAlias> {
+  generate(model: TypeScriptTypeAlias, writer: Writer): Writer {
+    if (model.import) {
+      writer.write(`${model.import.defaultImport}.Schema.`);
+    } else {
+      writer.write('types.');
+    }
+    writer.write(model.alias);
     return writer;
   }
 }

@@ -1,8 +1,8 @@
 import { pascalCase } from 'change-case';
-import { CodeGenerator, Registry } from '../code-generator';
-import { codeGenerator } from '../code-generator.decorator';
-import { identifyImports } from '../typescript/mapper/identify-imports';
-import { Writer } from '../writer';
+import { CodeGenerator, Registry } from '../../code-generator';
+import { codeGenerator } from '../../code-generator.decorator';
+import { identifyImports } from '../../typescript/mapper/identify-imports';
+import { Writer } from '../../writer';
 import {
   EcmaScriptImport,
   RouterDefinition,
@@ -13,7 +13,7 @@ import {
   TypeScriptInterface,
   TypeScriptObjectTypeLiteral,
   TypeScriptTypeComposition,
-} from '../../model/generated-code-model';
+} from '../../../model/generated-code-model';
 /**
  * Koa router implementation.
  *

@@ -1,6 +1,6 @@
+import { EcmaScriptImport } from '../../../model';
 import { expectSource } from '../../verify/source-assertions';
 import { Writer } from '../../writer';
-import { EcmaScriptImport } from '../../../model';
 import { EcmaScriptImportGenerator } from './import';
 
 describe('Import code generator', () => {

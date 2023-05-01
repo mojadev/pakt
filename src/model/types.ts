@@ -7,8 +7,22 @@ import { OpenAPIV3_1 } from 'openapi-types';
  * to the RoutingModel, which will then be transformed to the generated code.
  */
 export interface RoutingModel {
+  /**
+   * The sha sum of the source file.
+   */
+  shaSum: string;
+  /**
+   * The router paths that are exposed by the router.
+   */
   routerPaths: RouterPath[];
+  /**
+   * The types types that are defined in the OpenAPI document.
+   */
   types: Record<TypePath, TypeModel>;
+  /**
+   * The source file that was used to generate the model.
+   */
+  sourceFile: string;
 }
 
 /**

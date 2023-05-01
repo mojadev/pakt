@@ -45,6 +45,7 @@
     "koa": "^2.13.4",
     "koa-router": "^10.1.1",
     "lint-staged": "^13.1.0",
+    "prettier-plugin-organize-imports": "^3.2.2",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
     "ts-to-zod": "^1.13.1",
@@ -55,13 +56,16 @@
     "zod": "^3.17.3"
   },
   "dependencies": {
-    "change-case": "^4.1.2",
     "chalk": "^5.0.0",
-    "openapi-types": "^10.0.0",
-    "yaml": "^1.10.2",
+    "change-case": "^4.1.2",
     "commander": "^8.3.0",
+    "dotenv": "^16.0.3",
+    "openapi-types": "^10.0.0",
+    "pino": "^8.11.0",
+    "pino-pretty": "^10.0.0",
     "prettier": "^2.8.1",
-    "ts-morph": "^16.0.0"
+    "ts-morph": "^16.0.0",
+    "yaml": "^1.10.2"
   },
   "ts-node": {
     "require": [

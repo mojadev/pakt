@@ -4,7 +4,7 @@ import { expectSource } from '../../verify/source-assertions';
 import { Writer } from '../../writer';
 import { TypeScriptClassGenerator } from './class';
 import { TypeScriptGenericFieldGenerator } from './generic';
-import { TypeScriptAliasFieldGenerator } from './interface';
+import { TypeScriptAliasFieldGenerator } from './alias';
 
 describe('Typescript class model', () => {
   const registry = new Registry();

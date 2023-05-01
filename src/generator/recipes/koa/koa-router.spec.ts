@@ -1,5 +1,5 @@
-import { Registry } from '../code-generator';
-import { expectSource } from '../verify/source-assertions';
+import { Registry } from '../../code-generator';
+import { expectSource } from '../../verify/source-assertions';
 import {
   TypeScriptCompositeFieldGenerator,
   TypeScriptCompositeGenerator,
@@ -11,9 +11,9 @@ import {
   TypeScriptInterfaceFieldGenerator,
   TypeScriptInterfaceGenerator,
   TypeScriptObjectTypeDefinitionGenerator,
-} from '../typescript';
-import { Writer } from '../writer';
-import { RouterDefinition, RouterOperation, TypeScriptInterface, TypeScriptTypeAlias } from '../../model';
+} from '../../typescript';
+import { Writer } from '../../writer';
+import { RouterDefinition, RouterOperation, TypeScriptInterface, TypeScriptTypeAlias } from '../../../model';
 import { KoaRouterGenerator } from './koa-router';
 
 const router = new RouterDefinition();

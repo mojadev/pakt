@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types';
 import YAML from 'yaml';
+import crypto from 'node:crypto';
 import { parseResponses } from './response';
 import { parseType } from './type-declarations';
 import { Filename, MethodName, OperationList, PathName, RequestBodies, RequestParam, RoutingModel } from './types';
@@ -18,7 +19,8 @@ export const importModel = (filename: Filename): RoutingModel => {
   if (!document) {
     throw new Error('Could not parse OpenAPI document');
   }
-  return transformModel(document);
+  const model = transformModel(document, filename);
+  return model;
 };
 
 /**
@@ -31,11 +33,13 @@ export const importModel = (filename: Filename): RoutingModel => {
  * @param document
  * @returns
  */
-export const transformModel = (document: OpenAPIV3_1.Document): RoutingModel => {
+export const transformModel = (document: OpenAPIV3_1.Document, filename = ''): RoutingModel => {
   const allPaths = document.paths ?? {};
   const result: RoutingModel = {
+    shaSum: createShaSumForFile(JSON.stringify(document)),
     routerPaths: [],
     types: {},
+    sourceFile: filename,
   };
 
   Object.entries(document.components?.schemas ?? {}).forEach(([typeName, schema]) => {
@@ -152,3 +156,14 @@ const createOperation = (method: MethodName, path: PathName): string => {
     .replace(/[^A-Za-z0-0]/gi, '_');
   return method + sanitizedPath[0].toLocaleUpperCase() + sanitizedPath.substring(1);
 };
+
+/**
+ * Create the SHASum for this file.
+ * @param file
+ */
+function createShaSumForFile(file: string) {
+  const hash = crypto.createHash('sha256');
+  hash.update(file);
+  const shaSum = hash.digest('hex');
+  return shaSum;
+}

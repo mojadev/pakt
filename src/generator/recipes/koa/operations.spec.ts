@@ -1,13 +1,13 @@
-import { Registry } from '../code-generator';
-import { expectSource } from '../verify/source-assertions';
+import { RouterOperation, TypeScriptInterface, TypeScriptTypeAlias } from '../../../model/generated-code-model';
+import { Registry } from '../../code-generator';
 import {
   EcmaScriptImportGenerator,
   TypeScriptAliasFieldGenerator,
   TypeScriptInterfaceFieldGenerator,
   TypeScriptInterfaceGenerator,
-} from '../typescript';
-import { Writer } from '../writer';
-import { RouterOperation, TypeScriptInterface, TypeScriptTypeAlias } from '../../model/generated-code-model';
+} from '../../typescript';
+import { expectSource } from '../../verify/source-assertions';
+import { Writer } from '../../writer';
 import { OperationTypeGenerator } from './operations';
 
 describe('Operation types code generator', () => {
@@ -60,7 +60,7 @@ describe('Operation types code generator', () => {
     });
 
     const source = generator.generate(operation, new Writer('operation/get-pets.ts')).toString();
-    expectSource(source).toContainImport('../../components/schema').withNamedImport('Message');
+    expectSource(source).toContainImport('../components/schema').withNamedImport('Message');
   });
 
   it('should import api types from the api types module', () => {

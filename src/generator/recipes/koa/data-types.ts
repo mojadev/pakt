@@ -1,6 +1,6 @@
-import { CodeGenerator } from '../code-generator';
-import { codeGenerator } from '../code-generator.decorator';
-import { Writer } from '../writer';
+import { CodeGenerator } from '../../code-generator';
+import { codeGenerator } from '../../code-generator.decorator';
+import { Writer } from '../../writer';
 
 /**
  * Data types that are used for glueing koa and our implementation.

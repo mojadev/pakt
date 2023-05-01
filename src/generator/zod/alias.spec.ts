@@ -1,4 +1,4 @@
-import { TypeScriptTypeAlias } from '../../model/generated-code-model';
+import { EcmaScriptImport, TypeScriptTypeAlias } from '../../model/generated-code-model';
 import { Writer } from '../writer';
 import { ZodAliasGenerator } from './alias';
 
@@ -35,6 +35,21 @@ describe('zod alias generator', () => {
     const result = generator.generate(new TypeScriptTypeAlias('User', 'UserReference'), new Writer()).toString();
 
     expect(result).toEqual('Schemas.UserReferenceSchema');
+  });
+
+  it('should use the alias importsource for references outside of this document', () => {
+    const result = generator
+      .generate(
+        new TypeScriptTypeAlias('User', 'UserReference')
+          .withImportSource('./reference.yaml')
+          .withAliasImport(new EcmaScriptImport('otherFile').setDefaultImport('otherFile')),
+        new Writer()
+      )
+      .toString();
+
+    expect(result).toEqual(
+      'z.lazy((): z.ZodType<otherFile.Schema.UserReference> => otherFile.SchemaParser.UserReferenceSchema)'
+    );
   });
 
   it('should generate a zod array for arrays', () => {

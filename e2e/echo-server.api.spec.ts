@@ -1,4 +1,4 @@
-import { KoaRecipe } from '../src/generator/koa/koa';
+import { KoaRecipe } from '../src/generator/recipes/koa/koa';
 import { expectSource } from '../src/generator/verify/source-assertions';
 import { importModel } from '../src/model';
 import path from 'path';

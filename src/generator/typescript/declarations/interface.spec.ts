@@ -1,13 +1,9 @@
+import { TypeScriptGeneric, TypeScriptInterface, TypeScriptTypeAlias } from '../../../model';
 import { Registry } from '../../code-generator';
 import { expectSource } from '../../verify/source-assertions';
-import { TypeScriptGeneric, TypeScriptInterface, TypeScriptTypeAlias } from '../../../model';
-import { TypeScriptAliasGenerator } from './alias';
+import { TypeScriptAliasFieldGenerator, TypeScriptAliasGenerator } from './alias';
 import { TypeScriptGenericFieldGenerator } from './generic';
-import {
-  TypeScriptAliasFieldGenerator,
-  TypeScriptInterfaceFieldGenerator,
-  TypeScriptInterfaceGenerator,
-} from './interface';
+import { TypeScriptInterfaceFieldGenerator, TypeScriptInterfaceGenerator } from './interface';
 
 describe('Interface code generator', () => {
   const registry = new Registry();
