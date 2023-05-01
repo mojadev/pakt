@@ -17,10 +17,10 @@ jobs:
           release-type: node
           package-name: pakt-koa
 
-      - uses: actions/checkout
+      - uses: actions/checkout@v3
         if: ${{ steps.release.outputs.release_created }}
 
-      - uses: actions/setup-node
+      - uses: actions/setup-node@v3
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
