@@ -15,14 +15,14 @@ jobs:
         uses: google-github-actions/release-please-action@v3
         with:
           release-type: node
-          package-name: pakt-koa 
+          package-name: pakt-koa
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout
         if: ${{ steps.release.outputs.release_created }}
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node
         with:
-          node-version: 16
+          node-version: 20
           registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.release_created }}
 
@@ -31,7 +31,7 @@ jobs:
 
       - run: yarn ci --max-workers ${{ steps.cpu-cores.outputs.count }}
         if: ${{ steps.release.outputs.release_created }}
-      
+
       - run: yarn build
         if: ${{ steps.release.outputs.release_created }}
 

@@ -1,7 +1,7 @@
 name: Quality Gates
 
-on: 
-  push: 
+on:
+  push:
     branches:
       - main
   pull_request: {}
@@ -11,21 +11,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v2
-      
+      - uses: actions/checkout
+
       - name: Get number of CPU cores
         id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v1
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node
         with:
-          node-version: '16'
-      
+          node-version: '20'
+
       - run: yarn install
         name: Install
-      
+
       - run: yarn lint
         name: Lint
 
       - run: yarn ci --max-workers ${{ steps.cpu-cores.outputs.count }}
-        name: Test 
+        name: Test
