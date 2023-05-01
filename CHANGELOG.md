@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/mojadev/pakt/compare/v0.4.1...v0.5.0) (2023-05-01)
+
+
+### Features
+
+* allow references to other documents (refs [#24](https://github.com/mojadev/pakt/issues/24)) ([e9e30ce](https://github.com/mojadev/pakt/commit/e9e30cea6e4532c02c0aa1a9581eb178b8f9a1d8))
+
 ## [0.4.1](https://github.com/mojadev/pakt/compare/v0.4.0...v0.4.1) (2023-04-08)
 
 
