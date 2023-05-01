@@ -2,7 +2,7 @@
 import { rules } from '@typescript-eslint/eslint-plugin';
 import * as parser from '@typescript-eslint/parser';
 import { Linter, Rule } from 'eslint';
-import tsc from 'typescript';
+import type tsc from 'typescript';
 
 declare global {
   namespace jest {
@@ -14,12 +14,13 @@ declare global {
   }
 }
 
-const linter = new Linter();
-linter.defineParser('@typescript-eslint/parser', parser as Linter.ParserModule);
-linter.defineRules(rules as unknown as Record<string, Rule.RuleModule>);
 expect.extend({
   toTranspile: (received: string) => {
     try {
+      const linter = new Linter();
+
+      linter.defineParser('@typescript-eslint/parser', parser as Linter.ParserModule);
+      linter.defineRules(rules as unknown as Record<string, Rule.RuleModule>);
       const lintResult = linter
         .verify(received, {
           parser: '@typescript-eslint/parser',

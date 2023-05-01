@@ -10,6 +10,7 @@ module.exports = {
   moduleNameMapper: {
     '^@logger$': '<rootDir>/src/logger',
   },
+  workerIdleMemoryLimit: '512MB',
 
   coveragePathIgnorePatterns: ['node_modules/', '/src/generator/verify/'],
 };

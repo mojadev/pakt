@@ -31,6 +31,8 @@ jobs:
 
       - run: yarn ci --max-workers ${{ steps.cpu-cores.outputs.count }}
         if: ${{ steps.release.outputs.release_created }}
+        env:
+          NODE_OPTIONS: --max-old-space-size=3072
 
       - run: yarn build
         if: ${{ steps.release.outputs.release_created }}
