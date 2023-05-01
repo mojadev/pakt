@@ -1,7 +1,7 @@
+import { EcmaScriptImport } from '../../../model';
 import { CodeGenerator } from '../../code-generator';
 import { codeGenerator } from '../../code-generator.decorator';
 import { Writer } from '../../writer';
-import { EcmaScriptImport } from '../../../model';
 
 @codeGenerator('import')
 export class EcmaScriptImportGenerator implements CodeGenerator<EcmaScriptImport> {
@@ -12,7 +12,7 @@ export class EcmaScriptImportGenerator implements CodeGenerator<EcmaScriptImport
     writer
       .write('import ')
       .conditionalWrite(Boolean(ecmaImport.typeOnly), 'type ')
-      .conditionalWrite(Boolean(ecmaImport.namespaceImport), `* as ${ecmaImport.namespaceImport ?? 'unkno'}`)
+      .conditionalWrite(Boolean(ecmaImport.namespaceImport), `* as ${ecmaImport.namespaceImport ?? 'unknown'}`)
       .conditionalWrite(Boolean(ecmaImport.defaultImport), `${ecmaImport.defaultImport ?? 'unknown'}`)
       .conditionalWrite(Boolean(ecmaImport.namedImports) && Boolean(ecmaImport.defaultImport), ', ')
       .conditionalWrite(Boolean(ecmaImport.namedImports), () => {

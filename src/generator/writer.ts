@@ -1,4 +1,5 @@
-import { relative } from 'path/posix';
+import logger from '@logger';
+import { basename, dirname, relative } from 'path/posix';
 import { CodeBlockWriter } from 'ts-morph';
 
 export class Writer {
@@ -63,11 +64,18 @@ export class Writer {
   }
 
   public path(target: string): CodeBlockWriter {
-    let result = relative('/' + this.#location, '/' + target);
+    let writerLocation = this.#location;
+    let file = null;
+    if (!this.#location.endsWith('/')) {
+      writerLocation = dirname(this.#location);
+      file = basename(this.#location);
+    }
+    let result = relative('/' + writerLocation, '/' + target);
+    logger.trace({ writerLocation: this.#location, target, result }, 'Resolving path');
     if (!result.startsWith('.')) {
       result = './' + result;
     }
-    if (result === './' + this.#location) {
+    if (file && result === './' + file) {
       result = './';
     }
     return this.#writer.quote(result);

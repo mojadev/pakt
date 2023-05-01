@@ -1,8 +1,7 @@
 import { program } from 'commander';
 import fs from 'fs/promises';
 import path from 'path';
-import { ModelOnlyRecipe } from '../generator/model-only';
-import { importModel } from '../model';
+import { ModelOnlyRecipe } from '../generator/recipes/models';
 import { formatSource } from '../postprocess/prettier-format';
 
 program
@@ -13,8 +12,7 @@ program
   });
 
 export async function generateApi(file: string, folder: string): Promise<void> {
-  const model = importModel(file);
-  const recipe = new ModelOnlyRecipe(model);
+  const recipe = ModelOnlyRecipe.fromFile(file);
   const basePath = folder;
   try {
     await fs.mkdir(basePath);
@@ -33,5 +31,5 @@ export async function generateApi(file: string, folder: string): Promise<void> {
       const formatted = await formatSource(value, file);
       await fs.writeFile(file, formatted);
     })
-  );
+  ).catch(console.error);
 }

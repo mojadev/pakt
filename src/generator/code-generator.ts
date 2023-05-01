@@ -1,3 +1,4 @@
+import { EcmaScriptImport } from '../model';
 import { getModelType } from '../model/code-model.decorator';
 import { Writer } from './writer';
 
@@ -53,6 +54,15 @@ export const modelType = Symbol('modelType');
 
 export interface CodeModel<ModelType extends string> {
   [modelType]: ModelType;
+}
+
+/**
+ * A generator that creates a ECMAScript Module, e.g. a typescript file.
+ *
+ * This is mostly relevant due to modules having imports and exports.
+ */
+export interface ECMAScriptModuleGenerator {
+  addImport: (importStatement: EcmaScriptImport) => this;
 }
 
 export type SourceCode = string;

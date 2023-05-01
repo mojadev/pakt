@@ -9,7 +9,7 @@ describe('Resolve conflicts normalizer', () => {
         properties: {
           child: {
             type: 'ref',
-            ref: 'obj2',
+            ref: '#/components/schemas/obj2',
           },
         },
       },
@@ -18,7 +18,7 @@ describe('Resolve conflicts normalizer', () => {
         properties: {
           child: {
             type: 'ref',
-            ref: 'obj1',
+            ref: '#/components/schemas/obj1',
           },
         },
       },
@@ -37,7 +37,7 @@ describe('Resolve conflicts normalizer', () => {
         properties: {
           child: {
             type: 'ref',
-            ref: 'obj2',
+            ref: '#/components/schemas/obj2',
           },
         },
       },
@@ -46,7 +46,7 @@ describe('Resolve conflicts normalizer', () => {
         children: [
           {
             type: 'ref',
-            ref: 'obj1',
+            ref: '#/components/schemas/obj1',
           },
         ],
       },
@@ -65,7 +65,7 @@ describe('Resolve conflicts normalizer', () => {
         properties: {
           child: {
             type: 'ref',
-            ref: 'obj2',
+            ref: '#/components/schemas/obj2',
           },
         },
       },
@@ -77,7 +77,7 @@ describe('Resolve conflicts normalizer', () => {
             properties: {
               ref: {
                 type: 'ref',
-                ref: 'obj1',
+                ref: '#/components/schemas/obj1',
               },
             },
           },
@@ -141,14 +141,14 @@ describe('Resolve conflicts normalizer', () => {
       properties: {
         child: {
           type: 'ref',
-          ref: 'obj2',
+          ref: '#/components/schemas/obj2',
         },
         array: {
           type: 'array',
           children: [
             {
               type: 'ref',
-              ref: 'arrayRef',
+              ref: '#/components/schemas/arrayRef',
             },
           ],
         },
@@ -156,5 +156,28 @@ describe('Resolve conflicts normalizer', () => {
     };
 
     expect(getAllReferencesInModel(type)).toEqual(['obj2', 'arrayRef']);
+  });
+
+  it('should not try to resolve references for external documents (these are lazy by default)', () => {
+    const type: TypeModel = {
+      type: 'object',
+      properties: {
+        child: {
+          type: 'ref',
+          ref: '#/components/schemas/obj2',
+        },
+        array: {
+          type: 'array',
+          children: [
+            {
+              type: 'ref',
+              ref: './files.yaml#/components/schemas/arrayRef',
+            },
+          ],
+        },
+      },
+    };
+
+    expect(getAllReferencesInModel(type)).toEqual(['obj2']);
   });
 });

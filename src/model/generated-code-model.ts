@@ -59,11 +59,24 @@ export class EcmaScriptImport {
 export class TypeScriptTypeAlias {
   [aliasSource]?: string = '';
   [lazy]?: boolean = false;
+  import?: EcmaScriptImport;
+  importSource?: string;
 
   constructor(public readonly name: string, public readonly alias: string, public readonly exported: boolean = true) {}
 
   withAliasSource(source: string): this {
     this[aliasSource] = source;
+    return this;
+  }
+
+  withImportSource(importSource: string): this {
+    this.importSource = importSource;
+    return this;
+  }
+
+  withAliasImport(file: EcmaScriptImport): this {
+    this.import = file;
+    this.markAsLazy();
     return this;
   }
 
@@ -185,13 +198,32 @@ export type FieldName = string | number;
 
 @codeModel('router:raw')
 export class RouterRawDefinition implements RoutingModel {
+  shaSum: string;
   routerPaths: RouterPath[];
   types: Record<string, TypeModel>;
+  sourceFile: string;
 
   constructor(readonly model: RoutingModel) {
+    this.shaSum = model.shaSum;
     this.routerPaths = model.routerPaths;
     this.types = model.types;
+    this.sourceFile = model.sourceFile;
   }
+}
+
+@codeModel('barrelExport')
+export class BarrelExportDefinition {
+  exports: ReexportDefinition[] = [];
+
+  addExport(exportDefinition: ReexportDefinition): this {
+    this.exports = [...this.exports, exportDefinition];
+    return this;
+  }
+}
+
+@codeModel('reexport')
+export class ReexportDefinition {
+  constructor(public importDefinition: EcmaScriptImport, public name?: string | undefined) {}
 }
 
 @codeModel('router')

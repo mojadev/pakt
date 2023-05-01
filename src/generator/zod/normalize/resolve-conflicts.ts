@@ -1,3 +1,4 @@
+import logger from '@logger';
 import { TypeModel, TypePath } from '../../../model';
 
 export const resolveConflicts = (type: Record<TypePath, TypeModel>): Record<TypePath, TypeModel> => {
@@ -17,7 +18,7 @@ const traverseReferenceChain = (currentNode: string, type: Record<TypePath, Type
     .filter((x) => !chain.includes(x))
     .forEach((reference) => {
       if (!type[reference]) {
-        console.warn('Could not find reference', reference, 'in types', Object.keys(type));
+        logger.warn({ reference, type: Object.keys(type) }, 'Could not find reference');
         return;
       }
       traverseReferenceChain(reference, type, [...chain, reference]);
@@ -46,7 +47,7 @@ const markReferencesAsLazy = (type: TypeModel, source: string): TypeModel => {
 };
 
 export const getAllReferencesInModel = (type: TypeModel): string[] => {
-  if (type.type === 'ref' && type.ref) {
+  if (type.type === 'ref' && type.ref && type.ref.startsWith('#')) {
     return [type.ref.split('/').reverse()[0]];
   }
   const children = [...(type.children ?? []), ...Object.values(type.properties ?? {})];

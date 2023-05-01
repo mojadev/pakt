@@ -21,8 +21,10 @@ components:
           description: The letter format to use
           enum:
             - DIN5004
-      content:
-        $ref: '#/components/schemas/ContentNode'
+        author:
+          $ref: './ref-api.yaml#/components/schemas/Author'
+        content:
+          $ref: '#/components/schemas/ContentNode'
     ContentNode:
       oneOf:
         - $ref: '#/components/schemas/LayoutNode'

@@ -1,9 +1,9 @@
+import { TypeScriptTypeAlias, TypeScriptTypeComposition } from '../../../model';
 import { Registry } from '../../code-generator';
 import { expectSource } from '../../verify/source-assertions';
 import { Writer } from '../../writer';
-import { TypeScriptTypeAlias, TypeScriptTypeComposition } from '../../../model';
+import { TypeScriptAliasFieldGenerator } from './alias';
 import { TypeScriptCompositeFieldGenerator, TypeScriptCompositeGenerator } from './composite';
-import { TypeScriptAliasFieldGenerator } from './interface';
 
 describe('Composite types', () => {
   const registry = new Registry();

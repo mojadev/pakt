@@ -1,0 +1,27 @@
+openapi: 3.0.1
+info:
+  title: A shared domain model
+  description: This document contains a shared domain model
+  version: 1.0.0
+components:
+  schemas:
+    Author:
+      type: object
+      required:
+        - name
+        - role
+        - references
+      properties:
+        name:
+          type: string
+        role:
+          $ref: '#/components/schemas/AuthorRole'
+        references:
+          $ref: './api.yaml#/components/schemas/Document'
+    AuthorRole:
+      type: string
+      enum:
+        - author
+        - editor
+        - publisher
+        - reviewer

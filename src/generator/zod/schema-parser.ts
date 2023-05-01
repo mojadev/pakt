@@ -8,32 +8,37 @@ import {
   TypeScriptInterface,
   TypeScriptTypeComposition,
 } from '../../model/generated-code-model';
-import { CodeGenerator, Registry } from '../code-generator';
+import { CodeGenerator, ECMAScriptModuleGenerator, Registry } from '../code-generator';
 import { codeGenerator } from '../code-generator.decorator';
 import { generateCodeModelForType } from '../typescript/mapper';
 import { Writer } from '../writer';
 import { normalize } from './normalize';
 import { ZodStringAsNumberGenerator } from './stringAsNumber';
 
-@codeGenerator('router:raw')
-export class ZodSchemaParserGenerator implements CodeGenerator<RoutingModel> {
-  private readonly importZodSymbol = new EcmaScriptImport('zod', true).setDefaultImport('z');
-  /**
-   * This is required for lazy schemas, as we need to give a type hint in these cases
-   * A cleaner way would be to exclude the EcmaScriptImports from the nodes and include them in a second pass.
-   */
-  private readonly importTypes = new EcmaScriptImport('schemas').setNamespaceImport('types').setTypeOnly(true);
+const zodImport = new EcmaScriptImport('zod', true).setDefaultImport('z');
 
-  private readonly customZodFunctions: Array<CodeGenerator<unknown>> = [
-    new ZodStringAsNumberGenerator(this.importZodSymbol),
+@codeGenerator('router:raw')
+export class ZodSchemaParserGenerator implements CodeGenerator<RoutingModel>, ECMAScriptModuleGenerator {
+  private imports: EcmaScriptImport[] = [
+    zodImport,
+    /**
+     * This is required for lazy schemas, as we need to give a type hint in these cases
+     * A cleaner way would be to exclude the EcmaScriptImports from the nodes and include them in a second pass.
+     **/
+    new EcmaScriptImport('./schemas', true).setNamespaceImport('types').setTypeOnly(true),
   ];
+  private readonly customZodFunctions: Array<CodeGenerator<unknown>> = [new ZodStringAsNumberGenerator(zodImport)];
 
   constructor(private readonly registry: Registry) {}
 
+  addImport(importStatement: EcmaScriptImport) {
+    this.imports.push(importStatement);
+    return this;
+  }
+
   generate(model: RoutingModel, writer: Writer): Writer {
     const parserClass = this.generateParserClass(model);
-    this.registry.generateCode(this.importZodSymbol, writer);
-    this.registry.generateCode(this.importTypes, writer);
+    this.imports.forEach((importDeclaration) => this.registry.generateCode(importDeclaration, writer));
     writer.blankLine();
     this.customZodFunctions.forEach((zodFunction) => zodFunction.generate(model, writer));
     writer.blankLine();

@@ -55,4 +55,17 @@ describe('Ref Type handler', () => {
     expect(lazy.markedAsLazy()).toEqual(true);
     expect(staticValue.markedAsLazy()).toEqual(false);
   });
+
+  it('should add the name of the source as a prefix for the type', () => {
+    const result = refTypeHandler('test', {
+      ref: './otherDoc.yaml#/components/schema/RefType',
+      type: 'ref',
+    }) as TypeScriptTypeAlias;
+
+    expect(result?.alias).toEqual('RefType');
+    expect(result?.getAliasSource()).toEqual('components/schema');
+    expect(result?.import?.defaultImport).toEqual('OtherDoc');
+    expect(result?.importSource).toEqual('./otherDoc.yaml');
+    expect(result?.import?.path).toEqual('otherDoc');
+  });
 });

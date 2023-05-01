@@ -1,4 +1,4 @@
-import { RouterPath, RoutingModel } from '../../model';
+import { EcmaScriptImport, RouterPath, RoutingModel } from '../../model';
 import { Registry } from '../code-generator';
 import {
   EcmaScriptImportGenerator,
@@ -16,6 +16,8 @@ import { ZodSchemaParserGenerator } from './schema-parser';
 
 const model: RoutingModel = {
   routerPaths: [],
+  shaSum: 'sha-sum',
+  sourceFile: 'source-file.yaml',
   types: {
     Object: {
       type: 'object',
@@ -70,11 +72,17 @@ describe('Schema Parser', () => {
   registry.add(new TypeScriptGenericFieldGenerator(registry));
   registry.add(new TypeScriptAliasFieldGenerator());
 
-  const parser = new ZodSchemaParserGenerator(registry);
+  let parser = new ZodSchemaParserGenerator(registry);
+  beforeEach(() => {
+    parser = new ZodSchemaParserGenerator(registry);
+  });
 
   it('should generate imports for zod', () => {
     const routerModel: RoutingModel = {
       routerPaths: [],
+
+      shaSum: 'sha-sum',
+      sourceFile: 'source-file.yaml',
       types: {},
     };
 
@@ -100,6 +108,8 @@ describe('Schema Parser', () => {
 
   it('should generate schemas for every router path param', () => {
     const routerModel: RoutingModel = {
+      shaSum: 'sha-sum',
+      sourceFile: 'source-file.yaml',
       routerPaths: [
         {
           ...basicBody,
@@ -144,6 +154,8 @@ describe('Schema Parser', () => {
 
   it('should generate payload types for every requestBody', () => {
     const routerModel: RoutingModel = {
+      shaSum: 'sha-sum',
+      sourceFile: 'source-file.yaml',
       routerPaths: [
         {
           ...basicBody,
@@ -176,6 +188,8 @@ describe('Schema Parser', () => {
 
   it('should not define a body payload if no body exists', () => {
     const routerModel: RoutingModel = {
+      shaSum: 'sha-sum',
+      sourceFile: 'source-file.yaml',
       routerPaths: [
         {
           ...basicBody,
@@ -199,5 +213,12 @@ describe('Schema Parser', () => {
       'RecursiveArraySchema',
       'RecursiveArraySchema = Schemas.RecursiveArraySchema'
     );
+  });
+
+  it('should add additional imports when they provided to addImport', () => {
+    parser.addImport(new EcmaScriptImport('reference').setDefaultImport('Reference'));
+    const result = parser.generate(model, new Writer()).toString();
+
+    expectSource(result).toContainImport('./reference').withDefaultImport('Reference');
   });
 });

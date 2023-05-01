@@ -1,9 +1,9 @@
 import { pascalCase } from 'change-case';
-import { CodeGenerator, Registry } from '../code-generator';
-import { codeGenerator } from '../code-generator.decorator';
-import { identifyImports, simplifyImports } from '../typescript/mapper/identify-imports';
-import { Writer } from '../writer';
-import { EcmaScriptImport, RouterOperation, TypeScriptDataStructure } from '../../model/generated-code-model';
+import { CodeGenerator, Registry } from '../../code-generator';
+import { codeGenerator } from '../../code-generator.decorator';
+import { identifyImports, simplifyImports } from '../../typescript/mapper/identify-imports';
+import { Writer } from '../../writer';
+import { EcmaScriptImport, RouterOperation, TypeScriptDataStructure } from '../../../model/generated-code-model';
 
 @codeGenerator('router:responses')
 export class OperationTypeGenerator implements CodeGenerator<RouterOperation> {
