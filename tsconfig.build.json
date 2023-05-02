@@ -1,19 +1,10 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "target": "es6",
     "module": "Node16",
     "moduleResolution": "node",
-    "strict": true,
-    "esModuleInterop": true,
-    "declaration": true,
     "outDir": "dist/",
-    "lib": ["es6"],
-    "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest"],
-    "paths": { "@logger": ["./src/logger"] }
-  },
-  "include": ["src/**/*"],
-  "exclude": ["**/*.spec.ts"]
+    "lib": ["es6"]
+  }
 }

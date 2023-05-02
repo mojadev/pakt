@@ -1,6 +1,6 @@
-import logger from '@logger';
 import { basename, dirname, relative } from 'path/posix';
 import { CodeBlockWriter } from 'ts-morph';
+import logger from '../logger';
 
 export class Writer {
   #writer: CodeBlockWriter;
@@ -65,7 +65,7 @@ export class Writer {
 
   public path(target: string): CodeBlockWriter {
     let writerLocation = this.#location;
-    let file = null;
+    let file: string | null = null;
     if (!this.#location.endsWith('/')) {
       writerLocation = dirname(this.#location);
       file = basename(this.#location);

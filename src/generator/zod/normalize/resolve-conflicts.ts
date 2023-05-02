@@ -1,4 +1,4 @@
-import logger from '@logger';
+import logger from '../../../logger';
 import { TypeModel, TypePath } from '../../../model';
 
 export const resolveConflicts = (type: Record<TypePath, TypeModel>): Record<TypePath, TypeModel> => {

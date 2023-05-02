@@ -1,6 +1,6 @@
-import logger from '@logger';
 import { pascalCase } from 'change-case';
 import path from 'node:path';
+import logger from '../../logger';
 import {
   BarrelExportDefinition,
   EcmaScriptImport,

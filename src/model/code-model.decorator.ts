@@ -3,7 +3,7 @@ import { modelType } from '../generator/code-generator';
 export function codeModel(type: string) {
   // Required for mixin classes
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function <T extends new (...args: any[]) => object>(constructor: T) {
+  return function <T extends new (...args: any[]) => object>(constructor: T, ...rest: any[]) {
     return class extends constructor {
       [modelType] = type;
     };
