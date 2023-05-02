@@ -11,7 +11,8 @@
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "paths": { "@logger": ["src/logger"] }
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.spec.ts"]
