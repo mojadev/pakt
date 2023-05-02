@@ -12,7 +12,7 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "jest"],
-    "paths": { "@logger": ["src/logger"] }
+    "paths": { "@logger": ["./src/logger"] }
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.spec.ts"]
