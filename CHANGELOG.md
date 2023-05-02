@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://github.com/mojadev/pakt/compare/v0.5.2...v0.5.3) (2023-05-02)
+
+
+### Bug Fixes
+
+* fix [@logger](https://github.com/logger) resolution ([025ec23](https://github.com/mojadev/pakt/commit/025ec237c31f3c78af49084f799c8e85ed0a159d))
+
 ## [0.5.2](https://github.com/mojadev/pakt/compare/v0.5.1...v0.5.2) (2023-05-02)
 
 
