@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.4](https://github.com/mojadev/pakt/compare/v0.5.3...v0.5.4) (2023-05-02)
+
+
+### Bug Fixes
+
+* remove tests from build ([e176a44](https://github.com/mojadev/pakt/commit/e176a44ecc0075b68df72afe9c9cc91aad83181b))
+
 ## [0.5.3](https://github.com/mojadev/pakt/compare/v0.5.2...v0.5.3) (2023-05-02)
 
 
