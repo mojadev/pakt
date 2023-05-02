@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/mojadev/pakt/compare/v0.5.0...v0.5.1) (2023-05-02)
+
+
+### Continuous Integration
+
+* release 0.5.1 ([096965a](https://github.com/mojadev/pakt/commit/096965a01f316c7460a253f9325a30f0b1c795a7))
+
 ## [0.5.0](https://github.com/mojadev/pakt/compare/v0.4.1...v0.5.0) (2023-05-01)
 
 
