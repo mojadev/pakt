@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.5](https://github.com/mojadev/pakt/compare/v0.5.4...v0.5.5) (2023-05-02)
+
+
+### Bug Fixes
+
+* build exclusions ([6659856](https://github.com/mojadev/pakt/commit/6659856f32aa65c87e894daaad606652d507ab6b))
+
 ## [0.5.4](https://github.com/mojadev/pakt/compare/v0.5.3...v0.5.4) (2023-05-02)
 
 
